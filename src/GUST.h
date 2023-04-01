@@ -16,7 +16,7 @@ public:
         std::function<bool(VehicleState)> goal)
             : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal){}
     
-    std::vector<VehicleMotion> RunGUST();  
+    std::vector<VehicleMotion> RunGUST();  // Main function to Run GUST
 private:
     const StateSpace& S; 
     const WorkSpace& W; 
@@ -37,6 +37,13 @@ private:
     void initTreeAndGroups();
     std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
     MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Labda_r, int r);
+    void SplitGroup(int r);
+
+    // Help Functions for `GroupPlanner`
+    VehicleState SampleTarget(int r);
+    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, VehicleState s_target);
+    MotionTree::Node ExpandTree(MotionTree::Node v, VehicleState s_target);
+    //TODO: updating...
 
 
 };
