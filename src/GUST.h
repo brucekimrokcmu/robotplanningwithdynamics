@@ -43,7 +43,8 @@ private:
     VehicleState SampleTarget(int r);
     MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, VehicleState s_target);
     MotionTree::Node ExpandTree(MotionTree::Node v, VehicleState s_target);
-    //TODO: updating...
+    
+    int LocateRegion(VehicleState s);
 
 
 };
