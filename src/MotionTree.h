@@ -19,8 +19,8 @@ public:
     std::vector<Node> nodes;    // Vector of nodes in the tree
 
     Node newVertex();
-    void parent(Node& n_);
-    void state(Node& n_);
-    void control(Node& n_);
+    void parent(Node& n_, int parent_);
+    void state(Node& n_, VehicleState s_);
+    void control(Node& n_, VehicleMotion m_);
     
 };

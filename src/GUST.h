@@ -18,6 +18,7 @@ public:
     
     std::vector<VehicleMotion> RunGUST();  // Main function to Run GUST
 private:
+    // Input Parameters
     const StateSpace& S; 
     const WorkSpace& W; 
     const MotionSpace& M;  
@@ -29,7 +30,9 @@ private:
     // Constants
     double time; // TODO: max time to sampling
 
+    // Motion Tree
     MotionTree T;
+    // Set of set of vertices in small regions
     std::unordered_map<int,std::vector<MotionTree::Node>> Lambda;
     std::unordered_map<int,std::vector<MotionTree::Node>> EmptyLambda;
 
