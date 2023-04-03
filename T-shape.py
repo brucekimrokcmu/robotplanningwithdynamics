@@ -11,6 +11,11 @@ planeId = p.loadURDF("plane.urdf")
 # walls = p.createCollisionShape(p.GEOM_BOX, halfExtents=[2, 2, 0.1])
 # p.createMultiBody(baseCollisionShapeIndex=walls, basePosition=[0, 0, 0.5])
 
+# Drop car into environment
+startPos = [0,0,0.5]
+startOrientation = p.getQuaternionFromEuler([0,0,0])
+car = p.loadURDF("car.urdf",startPos, startOrientation)
+
 # Create a box object
 # startPos = [0,0,1]
 startOrientation = p.getQuaternionFromEuler([0,0,0])
@@ -186,8 +191,12 @@ box_body_1 = p.createMultiBody(
 
 
 # Run the simulation
-for i in range(10000):
+while(1):
+    p.setJointMotorControl2(car, 4, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
+    p.setJointMotorControl2(car, 6, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
+    p.setJointMotorControl2(car, 7, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
+    p.setJointMotorControl2(car, 8, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
     p.stepSimulation()
-    time.sleep(1./240.)
+    # time.sleep(1./240.)
 # Disconnect from the simulation environment
 p.disconnect()
