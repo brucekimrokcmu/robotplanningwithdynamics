@@ -3,25 +3,25 @@
 
 #include "WorkSpace.h"
 #include "StateSpace.h"
-#include "MotionSpace.h"
+#include "ControlSpace.h"
 #include "VehicleState.h"
 #include "VehicleMotion.h"
 #include "MotionTree.h"
 
 class GUST{
 public: 
-    GUST(const StateSpace& S, const WorkSpace& W, const MotionSpace& M,  
+    GUST(const StateSpace& S, const WorkSpace& W, const ControlSpace& M,  
         std::function<VehicleState(VehicleState, VehicleMotion, double)> motion, 
         std::function<bool(VehicleState)> valid, const VehicleState& s_init, 
         std::function<bool(VehicleState)> goal)
             : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal){}
     
-    std::vector<VehicleMotion> RunGUST();  // Main function to Run GUST
+    std::vector<MotionTree::Node> RunGUST();  // Main function to Run GUST
 private:
     // Input Parameters
     const StateSpace& S; 
     const WorkSpace& W; 
-    const MotionSpace& M;  
+    const ControlSpace& M;  
     std::function<VehicleState(VehicleState, VehicleMotion, double)> motion; 
     std::function<bool(VehicleState)> valid;
     const VehicleState& s_init;
@@ -47,7 +47,8 @@ private:
     MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, VehicleState s_target);
     MotionTree::Node ExpandTree(MotionTree::Node v, VehicleState s_target);
     
-    int LocateRegion(VehicleState s);
+    std::pair<double, double> proj(VehicleState s);
+    int LocateRegion(double x, double y);
 
 
 };
