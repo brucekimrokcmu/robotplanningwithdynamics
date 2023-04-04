@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "StateSpace.h"
-#include "ControlSpace.h"
+#include "StateSpace.hpp"
+#include "ControlSpace.hpp"
 
 class MotionTree {
 public:
@@ -19,9 +19,9 @@ public:
 
     std::vector<Node> nodes;    // Vector of nodes in the tree
 
-    Node newVertex();
-    void parent(Node& n_, int parent_);
-    void state(Node& n_, StateSpace::VehicleState s_);
-    void control(Node& n_, ControlSpace::VehicleControl m_);
+    Node NewVertex();
+    void Parent(Node& n_, int parent_);
+    void State(Node& n_, StateSpace::VehicleState s_);
+    void Control(Node& n_, ControlSpace::VehicleControl m_);
     
 };

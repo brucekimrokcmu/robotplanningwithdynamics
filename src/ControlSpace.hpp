@@ -10,7 +10,7 @@ public:
         : maxAcceleration(maxAcceleration), maxSteeringRate(maxSteeringRate){};
     // Constructor that initializes the motion space with the given parameters
     
-    bool isValidControl(double acc, double ste) const;
+    bool IsValidControl(double acc, double ste) const;
     // Returns true if the given state (x, y, theta) is valid within the motion space, false otherwise
     
     // std::vector<double> getNextValidState(double x, double y, double theta, double velocity, double steeringAngle, double timeStep) const;
@@ -27,8 +27,8 @@ private:
     // Helper functions for checking validity of states and calculating next states within the motion space
     // bool isValidPosition(double x, double y) const;
     // bool isValidHeading(double theta) const;
-    bool isValidAcc(double velocity) const;
-    bool isValidSteeringRate(double steeringRate) const;
+    bool IsValidAcc(double velocity) const;
+    bool IsValidSteeringRate(double steeringRate) const;
     // bool isValidTimeStep(double timeStep) const;
     // double calculateTurningRadius(double steeringAngle) const;
     // double calculateMaxTurningSpeed(double turningRadius) const;

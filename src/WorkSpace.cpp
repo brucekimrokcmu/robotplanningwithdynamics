@@ -1,20 +1,20 @@
-#include "workspace.h" 
+#include "WorkSpace.hpp" 
 
-bool WorkSpace::check_collision (double x, double y){
+bool WorkSpace::Check_collision (double x, double y){
     if(map[y][x] == 0) return true;
     return false;
 }
 
-Region WorkSpace::getRegion(int id_){
+Region WorkSpace::GetRegion(int id_){
     return regions[id_];
 }
 
 // TODO: Need Implement -- Decomposition (split regions then append to `regions`)
-void WorkSpace::decompose(){
+void WorkSpace::Decompose(){
     return;
 }
 
 //TODO: Need Implement -- Calculate Heuristic value for each region
-void WorkSpace::calculateHeuristic(){
+void WorkSpace::CalculateHeuristic(){
     return;
 }

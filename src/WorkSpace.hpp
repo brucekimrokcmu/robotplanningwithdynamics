@@ -21,11 +21,11 @@ private:
 public:
     WorkSpace(){};
     // TODO: Need a Parameterized Constructor
-    bool check_collision(double x, double y);
-    Region getRegion(int id);
+    bool Check_collision(double x, double y);
+    Region GetRegion(int id);
 
     
-    void decompose();
-    void calculateHeuristic();
+    void Decompose();
+    void CalculateHeuristic();
 
 };

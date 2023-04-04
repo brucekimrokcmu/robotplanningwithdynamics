@@ -2,10 +2,10 @@
 #include <unordered_map>
 #include <functional>
 
-#include "WorkSpace.h"
-#include "StateSpace.h"
-#include "ControlSpace.h"
-#include "MotionTree.h"
+#include "WorkSpace.hpp"
+#include "StateSpace.hpp"
+#include "ControlSpace.hpp"
+#include "MotionTree.hpp"
 
 class GUST{
 public: 
@@ -36,7 +36,7 @@ private:
     std::unordered_map<int,std::vector<MotionTree::Node>> EmptyLambda;
 
     // Function Interfaces
-    void initTreeAndGroups();
+    void InitTreeAndGroups();
     std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
     MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Labda_r, int r);
     void SplitGroup(int r);
@@ -46,7 +46,7 @@ private:
     MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, StateSpace::VehicleState s_target);
     MotionTree::Node ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
     
-    std::pair<double, double> proj(StateSpace::VehicleState s);
+    std::pair<double, double> Proj(StateSpace::VehicleState s);
     int LocateRegion(double x, double y);
 
 
