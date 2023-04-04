@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <limits>
+#include <set>
+#include "MotionTree.h"
 
 struct Region {
     Region(double x_, double y_, double size)
@@ -12,6 +14,7 @@ struct Region {
     double size;
     double h_value;
     bool expanded;
+    std::set<MotionTree::Node> vertices;
 };
 
 class WorkSpace{
