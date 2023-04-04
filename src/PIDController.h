@@ -1,3 +1,4 @@
+#pragma once
 #include "StateSpace.h"
 #include "ControlSpace.h"
 
