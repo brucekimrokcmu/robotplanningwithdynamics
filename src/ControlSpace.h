@@ -2,6 +2,9 @@
 
 class ControlSpace {
 public:
+    struct VehicleControl{
+        //TODO: implement vehicle control
+    };
     ControlSpace( double maxAcceleration, double maxSteeringrate)
         : maxAcceleration(maxAcceleration), maxSteeringRate(maxSteeringRate){};
     // Constructor that initializes the motion space with the given parameters
