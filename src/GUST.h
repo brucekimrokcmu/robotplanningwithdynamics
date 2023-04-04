@@ -4,16 +4,14 @@
 #include "WorkSpace.h"
 #include "StateSpace.h"
 #include "ControlSpace.h"
-#include "VehicleState.h"
-#include "VehicleMotion.h"
 #include "MotionTree.h"
 
 class GUST{
 public: 
     GUST(const StateSpace& S, const WorkSpace& W, const ControlSpace& M,  
-        std::function<VehicleState(VehicleState, VehicleMotion, double)> motion, 
-        std::function<bool(VehicleState)> valid, const VehicleState& s_init, 
-        std::function<bool(VehicleState)> goal)
+        std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
+        std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
+        std::function<bool(StateSpace::VehicleState)> goal)
             : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal){}
     
     std::vector<MotionTree::Node> RunGUST();  // Main function to Run GUST
@@ -22,10 +20,10 @@ private:
     const StateSpace& S; 
     const WorkSpace& W; 
     const ControlSpace& M;  
-    std::function<VehicleState(VehicleState, VehicleMotion, double)> motion; 
-    std::function<bool(VehicleState)> valid;
-    const VehicleState& s_init;
-    std::function<bool(VehicleState)> goal;
+    std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion; 
+    std::function<bool(StateSpace::VehicleState)> valid;
+    const StateSpace::VehicleState& s_init;
+    std::function<bool(StateSpace::VehicleState)> goal;
 
     // Constants
     double time; // TODO: max time to sampling
@@ -43,11 +41,11 @@ private:
     void SplitGroup(int r);
 
     // Help Functions for `GroupPlanner`
-    VehicleState SampleTarget(int r);
-    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, VehicleState s_target);
-    MotionTree::Node ExpandTree(MotionTree::Node v, VehicleState s_target);
+    StateSpace::VehicleState SampleTarget(int r);
+    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, StateSpace::VehicleState s_target);
+    MotionTree::Node ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
     
-    std::pair<double, double> proj(VehicleState s);
+    std::pair<double, double> proj(StateSpace::VehicleState s);
     int LocateRegion(double x, double y);
 
 

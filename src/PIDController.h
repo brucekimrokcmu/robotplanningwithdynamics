@@ -1,14 +1,14 @@
-#include "VehicleState.h"
-#include "VehicleMotion.h"
+#include "StateSpace.h"
+#include "ControlSpace.h"
 
 class PIDController{
 
 public: 
-    PIDController(VehicleState s_current, VehicleState s_target);
-    VehicleMotion control();
+    PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target);
+    ControlSpace::VehicleControl control();
 private:
-    VehicleState s_current;
-    VehicleState s_target;
+    StateSpace::VehicleState s_current;
+    StateSpace::VehicleState s_target;
 
 
 };
