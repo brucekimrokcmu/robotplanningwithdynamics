@@ -26,9 +26,7 @@ struct Region {
     bool expanded;
 };
 
-class WorkSpace{
-private:
-    struct Obstacle {
+struct Obstacle {
         double x;
         double y;
         double x_extent;
@@ -50,17 +48,23 @@ private:
 
         Obstacle(double x, double y, double x_extent, double y_extent): x(x), y(y), x_extent(x_extent), y_extent(y_extent){};
     };
+
+class WorkSpace{
+private:
     double x_min;
     double x_max;
     double y_min;
     double y_max;
-    std::vector<Obstacle> obstacles;
-    std::vector<Region> regions;
+    std::vector<Obstacle> obstacles{};
+    std::vector<Region> regions{};
 public:
-    WorkSpace(){};
+    WorkSpace(): x_min(0), x_max(0), y_min(0), y_max(0){};
    
-    WorkSpace(double x_min, double x_max, double y_min, double y_max, std::vector<Obstacle> obs)
-        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max), obstacles(obs){};
+    WorkSpace(double x_min, double x_max, double y_min, double y_max)
+        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max){};
+
+    void addObstacle(Obstacle obs){obstacles.push_back(obs);}
+    int countRegionSize() {return (int)regions.size();}
     bool Check_collision(double x, double y);
     Region GetRegion(int id);
 

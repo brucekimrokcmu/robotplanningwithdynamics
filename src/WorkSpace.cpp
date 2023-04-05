@@ -1,4 +1,5 @@
-#include "WorkSpace.hpp" 
+#include "WorkSpace.hpp"
+#include <iostream> 
 
 bool WorkSpace::Check_collision (double x, double y){
     for(auto r : obstacles){
@@ -46,7 +47,7 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
     result.push_back(up_right);
     result.push_back(bottom_left);
     result.push_back(bottom_right);
-
+   
     return result;
 
 }
@@ -71,7 +72,21 @@ int WorkSpace::LocateRegion(double x, double y){
 // TODO: Need Implement -- Decomposition (split regions then append to `regions`)
 
 bool WorkSpace::containObstacle(Region r){
-    
+    for(auto obs : obstacles){
+        if(
+        obs.isObstacle(r.x_start, r.y_start)||
+        obs.isObstacle(r.x_start + r.x_extent, r.y_start)||
+        obs.isObstacle(r.x_start, r.y_start + r.y_extent)||
+        obs.isObstacle(r.x_start + r.x_extent, r.y_start + r.y_extent)||
+        r.inRegion(obs.x-obs.x_extent, obs.y-obs.y_extent)||
+        r.inRegion(obs.x+obs.x_extent, obs.y-obs.y_extent)||
+        r.inRegion(obs.x-obs.x_extent, obs.y+obs.y_extent)||
+        r.inRegion(obs.x+obs.x_extent, obs.y+obs.y_extent)){
+            return true;
+        }
+
+    }
+    return false;
 }
 
 void WorkSpace::decomposeHelper(Region r){
@@ -81,7 +96,16 @@ void WorkSpace::decomposeHelper(Region r){
     if(!containObstacle(r)){
         return;
     }
-    SplitRegion
+    
+    std::vector<Region> new_regions = SplitRegion(r);
+    
+    r.splitted = true;
+    for(auto nr : new_regions){
+        regions.push_back(nr);
+        decomposeHelper(nr);
+    }
+    return;
+
 }
 
 void WorkSpace::Decompose(){
