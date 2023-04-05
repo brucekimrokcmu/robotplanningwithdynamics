@@ -47,7 +47,7 @@ private:
     MotionTree::Node ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
     
     std::pair<double, double> Proj(StateSpace::VehicleState s);
-    int LocateRegion(double x, double y);
+    // int LocateRegion(double x, double y);
 
 
 };
