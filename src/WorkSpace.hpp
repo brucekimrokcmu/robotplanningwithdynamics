@@ -16,6 +16,8 @@ struct Region {
     double y_extent;
     bool splitted;
 
+    std::vector<int> neighbors;
+
     bool inRegion(double x, double y){
         return x >= x_start && x < x_start+x_extent && y >= y_start && y < y_start + y_extent;
     }
@@ -71,6 +73,7 @@ public:
     // Helper functions
     bool containObstacle(Region r);
     void decomposeHelper(Region r);
+    void makeGraph();
 
     void Decompose();
     void CalculateHeuristic();

@@ -3,6 +3,8 @@
 
 #include "../src/WorkSpace.hpp"
 
+
+
 int main(){
     // Make obstacles
     //Obstacle 1 
@@ -40,6 +42,4 @@ int main(){
     WorkSpace W2 = WorkSpace(0,0,10,10);
     W2.Decompose();
     assert(W2.countRegionSize() == 1);
-
-
 }

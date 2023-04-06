@@ -108,11 +108,64 @@ void WorkSpace::decomposeHelper(Region r){
 
 }
 
+void WorkSpace::makeGraph(){
+    for(size_t i = 0; i < regions.size(); i++){
+        Region r = regions[i];
+        if(!r.splitted){
+            for(size_t j = 0; j < regions.size(); j++){
+                if(i!=j && !regions[j].splitted){
+                    Region r_n = regions[j];
+                    //right neighbor
+                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // right top
+                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start+r.y_extent){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // right bottom
+                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start + r_n.y_extent == r.y_start){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // bottom
+                    if(r_n.x_start == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // top
+                    if(r_n.x_start == r.x_start && r_n.y_start == r.y_start + r.y_extent){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // top left
+                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start + r.y_extent){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // left
+                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start){
+                        r.neighbors.push_back(j);
+                    }
+
+                    // bottom left
+                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
+                        r.neighbors.push_back(j);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void WorkSpace::Decompose(){
     // Start Region 
     Region start = Region(x_min,y_min,x_max-x_min, y_max-y_min);
     regions.push_back(start);
     decomposeHelper(start);
+    makeGraph();
     return;
 }
 
