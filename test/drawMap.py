@@ -6,6 +6,7 @@ with open('../output.txt', 'r') as f:
     obs_num = f.readline()
     obstacles = []
     for i in obs_num:
+        line = f.readline()
         x, x_extent, y, y_extent = map(float, line.strip().split(',')[:-1])
         obstacles.append((x, x_extent, y, y_extent))
     # Read the lines and parse the rectangle coordinates
