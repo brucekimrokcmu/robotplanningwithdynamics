@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <functional>
+#include <vector>
 
 #include "WorkSpace.h"
 #include "StateSpace.h"
@@ -44,7 +45,7 @@ private:
     // Help Functions for `GroupPlanner`
     StateSpace::VehicleState SampleTarget(int r);
     MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Lambda_r, StateSpace::VehicleState s_target);
-    MotionTree::Node ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
+    std::pair<MotionTree::Node, vector<MotionTree::Node>> ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
     
     std::pair<double, double> Proj(StateSpace::VehicleState s);
     int LocateRegion(double x, double y);

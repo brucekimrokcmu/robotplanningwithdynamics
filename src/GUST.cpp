@@ -1,5 +1,6 @@
 #include "GUST.h"
 #include <limits>
+#include <vector>
 #include "WorkSpace.h"
 #include "StateSpace.h"
 #include "ControlSpace.h"
@@ -81,10 +82,14 @@ MotionTree::Node GUST::SelectVertex(
 * towards s_target by moving to a new intermediate 
 * vertex v_new, and expand the MotionTree to
 * include v_new.
+*
+* Returns the last node added to the tree as well as a list
+* of all of the new vertices added.
 */
-MotionTree::Node GUST::ExpandTree(
+std::pair(MotionTree::Node, std::vector<MotionTree::Node>) GUST::ExpandTree(
     MotionTree::Node v, StateSpace::VehicleState s_target) {
 
+    std::vector<MotionTree::Node> new_vertices;
     VehicleControl u;
 
     // TODO: Implement random controller
@@ -113,8 +118,10 @@ MotionTree::Node GUST::ExpandTree(
         v_new.state = s_new;
         v_new.control = u;
 
+        new_vertices.push_back(v_new);
+
         if (StateSpace::goalState(s_new)) {
-            return v_new;
+            return std::pair(v_new, new_vertices);
         }
         if (StateSpace::nearTarget(s_new, s_target)) {
             return NULL;
@@ -125,8 +132,40 @@ MotionTree::Node GUST::ExpandTree(
     return NULL;
 }
 
+std::pair<int,std::vector<MotionTree::Node>> NewGroup(
+    int r, MotionTree::Node v_new) {
+
+    return NULL;
+}
 
 MotionTree::Node GUST::GroupPlanner(
     std::vector<MotionTree::Node> Lambda_r, int r) {
+
+    StateSpace::VehicleState s_target = SampleTarget(r);
+    MotionTree::Node v = SelectVertex(Lambda_r, s_target);
+    std::pair<MotionTree::Node, std::vector<MotionTree::Node>> new_v = ExpandTree(v, s_target);
+
+    MotionTree::Node v_last = new_v.first;
+    MotionTree::Node new_vertices = new_v.second;
+
+    for (MotionTree::Node v_new : new_vertices) {
+        std::pair<double,double> v_new_point = Proj(v_new.state);
+        int r_new = W.LocateRegion(v_new_point.first, v_new_point.second);
+
+        std::unordered_map<int,std::vector<MotionTree::Node>>::const_iterator iter = EmptyLambda.find(r_new);
+        // If region of the v_new is in the set of empty regions
+        if (iter == EmptyLambda.end()) {
+            // Remove r_new from empty splits
+            std::vector<MotionTree::Node> vertex_list = iter.second;
+            EmptyLambda.erase(r_new);
+
+            // Add r_new back to Lambda
+            Lambda.insert(
+                std::make_pair<std::int,std::vector<MotionTree::Node>>(
+                    r_new, vertex_list
+                )
+            );
+        }
+    }
 
 }
