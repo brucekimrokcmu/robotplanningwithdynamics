@@ -67,7 +67,9 @@ public:
 
     void addObstacle(Obstacle obs){obstacles.push_back(obs);}
     int countRegionSize() {return (int)regions.size();}
+    int countObstacleSize() {return (int)obstacles.size();}
     bool Check_collision(double x, double y);
+    Obstacle GetObstacle(int id){return obstacles[id];}
     Region GetRegion(int id);
 
     // Helper functions

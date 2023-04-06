@@ -21,7 +21,21 @@ int main(int argc, char** argv){
 		throw std::runtime_error("Cannot open file");
 	}
 	m_log_fstream << argv[1] << std::endl; // Write out map name first
+    m_log_fstream << W2.countObstacleSize() << std::endl; // Write out map name first
 	/// Then write out all the joint angles in the plan sequentially
+    for(size_t i = 0; i < W2.countObstacleSize(); i++){
+        double x =  W2.GetObstacle(i).x - W2.GetObstacle(i).x_extent;
+        double y =  W2.GetObstacle(i).y - W2.GetObstacle(i).y_extent;
+        double x_extent = W2.GetObstacle(i).x_extent * 2;
+        double y_extent = W2.GetObstacle(i).y_extent * 2;
+            m_log_fstream << x << ",";
+            m_log_fstream << y << ",";
+            m_log_fstream << x_extent << ",";
+            m_log_fstream << y_extent << ",";
+            
+            m_log_fstream << std::endl;
+    }
+
 	for (size_t i = 0; i < W2.countRegionSize() ; i++) {
 		
         if(!W2.GetRegion(i).splitted){
