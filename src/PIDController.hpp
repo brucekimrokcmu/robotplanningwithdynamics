@@ -4,12 +4,16 @@
 
 class PIDController{
 
-public: 
-    PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target);
-    ControlSpace::VehicleControl control();
-private:
-    StateSpace::VehicleState s_current;
-    StateSpace::VehicleState s_target;
+    public: 
+        PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target);
+        ControlSpace::VehicleControl Control();
+
+    private:
+        StateSpace::VehicleState s_current;
+        StateSpace::VehicleState s_target;
+
+    
+
 
 
 };
