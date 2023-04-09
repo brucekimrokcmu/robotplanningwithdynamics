@@ -10,7 +10,7 @@
 
 class GUST{
 public: 
-    GUST(const StateSpace& S, WorkSpace& W, const ControlSpace& M,  
+    GUST(StateSpace& S, WorkSpace& W, const ControlSpace& M,  
         std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
         std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
         std::function<bool(StateSpace::VehicleState)> goal)
@@ -19,7 +19,7 @@ public:
     std::vector<MotionTree::Node> RunGUST();  // Main function to Run GUST
 private:
     // Input Parameters
-    const StateSpace& S; 
+    StateSpace& S; 
     WorkSpace& W; 
     const ControlSpace& M;  
     std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion; 
@@ -32,6 +32,7 @@ private:
     double delta; 
     double alpha;
     double beta;
+    double smallProb;
 
     // Motion Tree
     MotionTree T;

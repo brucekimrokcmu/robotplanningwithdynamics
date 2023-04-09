@@ -3,6 +3,8 @@
 #include <vector>
 #include <queue>
 #include <cmath>
+#include <iostream>
+#include <random>
 #include "WorkSpace.hpp"
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
@@ -51,11 +53,24 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     // TODO: actually sample this, for now just return a fixed state in the region
 
     Region lambda_R = W.GetRegion(r);
+    StateSpace::VehicleState s_target;
+    double lower_bound = 0;
+    double upper_bound = 1;
+ 
+    std::uniform_real_distribution<double> unif(lower_bound,
+                                           upper_bound);
+    std::default_random_engine re;
+ 
+    // Getting a random double value
+    double random_double = unif(re);
+    if(random_double < smallProb){
 
+    }else{
+        s_target = S.getRandomState();
+    }
+    
     // return fixed state in region
-    StateSpace::VehicleState s_target = VehicleState(
-        lambda_R.x_start, lambda_R.y_start, 0,
-        0, 0);
+    
 
     return s_target;
 }
