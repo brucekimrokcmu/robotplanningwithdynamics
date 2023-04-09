@@ -24,6 +24,9 @@ struct Region {
     }
     void addSel(){
         nsel++;}
+    bool whetherCanSplit(){
+        return x_extent > SMALLESTEXTENT && y_extent > SMALLESTEXTENT;
+    }
 
     double h_value = std::numeric_limits<double>::max();
     bool expanded = false;

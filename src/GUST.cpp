@@ -197,7 +197,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         s_new.v_ = v.state.v_;
         s_new.phi_= v.state.phi_;
         MotionTree::Node v_new = T.newVertex(s_new);
-        if(!S.validState(s_new)){
+        if(!valid(s_new)){
             return std::make_pair<MotionTree::Node, std::vector<MotionTree::Node>>({}, {});
         }
         v_new.parent = v_parent.id;
@@ -315,4 +315,33 @@ void GUST::SplitGroup(int r){
         }
         
     }
+}
+
+//******************************************************************
+//************************* GUST Function **************************
+//******************************************************************
+
+std::vector<MotionTree::Node> GUST::RunGUST(){
+    W.Decompose();
+    W.CalculateHeuristic(goal_region.x_start + goal_region.x_extent/2, goal_region.y_start + goal_region.y_extent/2);
+
+    InitTreeAndGroups();
+    auto start = std::chrono::high_resolution_clock::now();  
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    while((double)duration.count() < time){
+        int groupId = SelectGroup().second;
+        std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
+        MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
+        if(v_last.id != NULL){
+            return T.getPath(v_last);
+        }
+        if(W.GetRegion(groupId).whetherCanSplit()){
+            SplitGroup(groupId);
+        }
+        stop = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+
+    } 
+    return std::vector<MotionTree::Node>{};  
 }

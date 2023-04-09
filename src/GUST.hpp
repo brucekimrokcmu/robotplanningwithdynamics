@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <functional>
 #include <vector>
+#include <chrono> 
 
 #include "WorkSpace.hpp"
 #include "StateSpace.hpp"
@@ -13,8 +14,8 @@ public:
     GUST(StateSpace& S, WorkSpace& W, const ControlSpace& M,  
         std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
         std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
-        std::function<bool(StateSpace::VehicleState)> goal)
-            : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal){}
+        std::function<bool(StateSpace::VehicleState)> goal, Region goal_region)
+            : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal), goal_region(goal_region){}
     
     std::vector<MotionTree::Node> RunGUST();  // Main function to Run GUST
 private:
@@ -26,14 +27,15 @@ private:
     std::function<bool(StateSpace::VehicleState)> valid;
     const StateSpace::VehicleState& s_init;
     std::function<bool(StateSpace::VehicleState)> goal;
+    Region goal_region;
 
     // Constants
-    double time; // TODO: max time to sampling
-    double delta; 
-    double alpha;
-    double beta;
-    double smallProb;
-    double epsilon;
+    double time = 10000; // TODO: max time to sampling
+    double delta = 0.5; 
+    double alpha = 8;
+    double beta = 0.85;
+    double smallProb = 0.15;
+    double epsilon = 0.8;
 
     // Motion Tree
     MotionTree T;
