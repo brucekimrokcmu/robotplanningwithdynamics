@@ -17,7 +17,8 @@ public:
         : maxX(maxX), maxY(maxY),maxHeadingAngle(maxHeadingAngle), maxSpeed(maxSpeed), maxSteering(maxSteering){};
     VehicleState getRandomState(int r);
     bool nearTarget(VehicleState s_new, VehicleState s_target);
-    bool validState();
+    bool validState(VehicleState s_new);
+    bool goalState(VehicleState s_new);
     
 
 private:

@@ -19,9 +19,12 @@ public:
 
     std::vector<Node> nodes;    // Vector of nodes in the tree
 
-    Node NewVertex();
-    void Parent(Node& n_, int parent_);
-    void State(Node& n_, StateSpace::VehicleState s_);
-    void Control(Node& n_, ControlSpace::VehicleControl m_);
+    Node newVertex(StateSpace::VehicleState s_new);     // Add a new vertex to the tree based on a current state
+
+    // These functions below shouldn't be necessary since they
+    // can be accessed/set through the Node struct
+    //void parent(Node& n_, int parent_);
+    //void state(Node& n_, StateSpace::VehicleState s_);
+    //void control(Node& n_, ControlSpace::VehicleControl m_);
     
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <functional>
+#include <vector>
 
 #include "WorkSpace.hpp"
 #include "StateSpace.hpp"
@@ -36,15 +37,16 @@ private:
     std::unordered_map<int,std::vector<MotionTree::Node>> EmptyLambda;
 
     // Function Interfaces
+    void CalculateHeuristics();
     void InitTreeAndGroups();
     std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
-    MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Labda_r, int r);
+    MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Lambda_r, int r);
     void SplitGroup(int r);
 
     // Help Functions for `GroupPlanner`
     StateSpace::VehicleState SampleTarget(int r);
-    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Labda_r, StateSpace::VehicleState s_target);
-    MotionTree::Node ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
+    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Lambda_r, StateSpace::VehicleState s_target);
+    std::pair<MotionTree::Node, std::vector<MotionTree::Node>> ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
     
     std::pair<double, double> Proj(StateSpace::VehicleState s);
     // int LocateRegion(double x, double y);

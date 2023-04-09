@@ -9,7 +9,7 @@ struct Region {
     Region(double x_, double y_, double x_extent,double y_extent)
         : x_start(x_), y_start(y_), x_extent(x_extent), y_extent(y_extent), splitted(false),
             h_value(std::numeric_limits<double>::max()), expanded(false) {}
-
+    int id;
     double x_start;
     double y_start;
     double x_extent;
@@ -22,10 +22,8 @@ struct Region {
         return x >= x_start && x < x_start+x_extent && y >= y_start && y < y_start + y_extent;
     }
 
-
-
-    double h_value;
-    bool expanded;
+    double h_value = std::numeric_limits<double>::max();
+    bool expanded = false;
 };
 
 struct Obstacle {
@@ -37,16 +35,7 @@ struct Obstacle {
         bool isObstacle(double x_, double y_){
             return x_ >= x-x_extent && x_ <= x+x_extent && y_ >= y-y_extent && y_ <= y+y_extent; 
         }
-        // bool isObstacle(Region r){
-            
-        //     isObstacle(r.x_start, r.y_start);
-        //     isObstacle(r.x_start + r.x_extent, r.y_start);
-        //     isObstacle(r.x_start, r.y_start+r.y_extent);
-        //     isObstacle(r.x_start + r.x_extent, r.y_start + r.y_extent);
 
-
-            
-        // }
 
         Obstacle(double x, double y, double x_extent, double y_extent): x(x), y(y), x_extent(x_extent), y_extent(y_extent){};
     };
@@ -69,16 +58,16 @@ public:
     int countRegionSize() {return (int)regions.size();}
     int countObstacleSize() {return (int)obstacles.size();}
     bool Check_collision(double x, double y);
-    Obstacle GetObstacle(int id){return obstacles[id];}
-    Region GetRegion(int id);
+    const Obstacle GetObstacle(int id){return obstacles[id];}
+    const Region GetRegion(int id);
 
     // Helper functions
     bool containObstacle(Region r);
-    void decomposeHelper(Region r);
+    void decomposeHelper(Region &r);
     void makeGraph();
 
     void Decompose();
-    void CalculateHeuristic();
+    void CalculateHeuristic(double x, double y); // This is just for test, this function should belong to GUST.hpp not here
     int LocateRegion(double x, double y);
     std::vector<Region> SplitRegion(Region r);
 };

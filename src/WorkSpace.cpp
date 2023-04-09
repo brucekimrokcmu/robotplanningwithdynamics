@@ -1,5 +1,7 @@
-#include "WorkSpace.hpp"
 #include <iostream> 
+#include <queue>
+
+#include "WorkSpace.hpp"
 
 bool WorkSpace::Check_collision (double x, double y){
     for(auto r : obstacles){
@@ -10,7 +12,7 @@ bool WorkSpace::Check_collision (double x, double y){
     return false;
 }
 
-Region WorkSpace::GetRegion(int id_){
+const Region WorkSpace::GetRegion(int id_){
     return regions[id_];
 }
 
@@ -43,10 +45,14 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
     bottom_right.y_extent = r.y_extent/2.0;
 
     std::vector<Region> result;
-    result.push_back(up_left);
-    result.push_back(up_right);
-    result.push_back(bottom_left);
-    result.push_back(bottom_right);
+    if(up_left.x_extent != 0.0 && up_left.y_extent != 0.0)
+        result.push_back(up_left);
+    if(up_right.x_extent != 0.0 && up_right.y_extent != 0.0)
+        result.push_back(up_right);
+    if(bottom_left.x_extent != 0.0 && bottom_left.y_extent != 0.0)
+        result.push_back(bottom_left);
+    if(bottom_right.x_extent != 0.0 && bottom_right.y_extent != 0.0)
+        result.push_back(bottom_right);
    
     return result;
 
@@ -69,7 +75,6 @@ int WorkSpace::LocateRegion(double x, double y){
 
 }
 
-// TODO: Need Implement -- Decomposition (split regions then append to `regions`)
 
 bool WorkSpace::containObstacle(Region r){
     for(auto obs : obstacles){
@@ -89,7 +94,7 @@ bool WorkSpace::containObstacle(Region r){
     return false;
 }
 
-void WorkSpace::decomposeHelper(Region r){
+void WorkSpace::decomposeHelper(Region &r){
     if(r.x_extent < SMALLESTEXTENT || r.y_extent < SMALLESTEXTENT){
         return;
     }
@@ -99,8 +104,9 @@ void WorkSpace::decomposeHelper(Region r){
     
     std::vector<Region> new_regions = SplitRegion(r);
     
-    r.splitted = true;
+    regions[r.id].splitted = true;
     for(auto nr : new_regions){
+        nr.id = (int)regions.size();
         regions.push_back(nr);
         decomposeHelper(nr);
     }
@@ -116,44 +122,49 @@ void WorkSpace::makeGraph(){
                 if(i!=j && !regions[j].splitted){
                     Region r_n = regions[j];
                     //right neighbor
-                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start){
-                        r.neighbors.push_back(j);
+                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start < r.y_start + r.y_extent && r_n.y_start + r_n.y_extent >= r.y_start){
+                        regions[i].neighbors.push_back(j);
+                        continue;
                     }
 
                     // right top
-                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start+r.y_extent){
-                        r.neighbors.push_back(j);
-                    }
+                    // if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start+r.y_extent){
+                    //     regions[i].neighbors.push_back(j);
+                    // }
 
                     // right bottom
-                    if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start + r_n.y_extent == r.y_start){
-                        r.neighbors.push_back(j);
-                    }
+                    // if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start + r_n.y_extent >= r.y_start){
+                    //     regions[i].neighbors.push_back(j);
+                    //     continue;
+                    // }
 
                     // bottom
-                    if(r_n.x_start == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
-                        r.neighbors.push_back(j);
+                    if(r_n.x_start <= r.x_start+r.x_extent && r_n.y_start + r_n.y_extent == r.y_start && r_n.x_start + r_n.x_extent >= r.x_start){
+                        regions[i].neighbors.push_back(j);
+                        continue;
                     }
 
                     // top
-                    if(r_n.x_start == r.x_start && r_n.y_start == r.y_start + r.y_extent){
-                        r.neighbors.push_back(j);
+                    if(r_n.x_start <= r.x_start+r.x_extent && r_n.y_start == r.y_start + r.y_extent && r_n.x_start + r_n.x_extent >= r.x_start){
+                        regions[i].neighbors.push_back(j);
+                        continue;
                     }
 
                     // top left
-                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start + r.y_extent){
-                        r.neighbors.push_back(j);
-                    }
+                    // if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start + r.y_extent){
+                    //     regions[i].neighbors.push_back(j);
+                    // }
 
                     // left
-                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start){
-                        r.neighbors.push_back(j);
+                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start +r_n.y_extent >= r.y_start && r_n.y_start <= r.y_start + r.y_extent){
+                        regions[i].neighbors.push_back(j);
+                        continue;
                     }
 
                     // bottom left
-                    if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
-                        r.neighbors.push_back(j);
-                    }
+                    // if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
+                    //     regions[i].neighbors.push_back(j);
+                    // }
                 }
             }
         }
@@ -163,6 +174,7 @@ void WorkSpace::makeGraph(){
 void WorkSpace::Decompose(){
     // Start Region 
     Region start = Region(x_min,y_min,x_max-x_min, y_max-y_min);
+    start.id = 0;
     regions.push_back(start);
     decomposeHelper(start);
     makeGraph();
@@ -170,6 +182,48 @@ void WorkSpace::Decompose(){
 }
 
 //TODO: Need Implement -- Calculate Heuristic value for each region
-void WorkSpace::CalculateHeuristic(){
+struct Comparator{
+    bool operator()(Region& a, Region& b){
+        return a.h_value > b.h_value;
+    }
+};
+
+void WorkSpace::CalculateHeuristic(double x, double y){
+    Region start;
+    for(size_t i = 0; i < regions.size(); i++){
+        if(!regions[i].splitted && regions[i].inRegion(x,y)){
+            regions[i].h_value = 0.0;
+            printf("%f\n", regions[i].x_start);
+            start = regions[i];
+        }
+    }
+    // start.h_value = 0.0;
+
+  
+    std::priority_queue <Region, std::vector<Region>, Comparator> openPQ;
+    openPQ.push(start);
+    while(openPQ.size() != 0){
+        
+        Region current = openPQ.top();
+        openPQ.pop();
+
+        regions[current.id].expanded = true;
+
+        for(size_t i = 0; i < current.neighbors.size(); i++){
+            
+            Region neighbor = regions[current.neighbors[i]];
+            printf("%f,%f, %f |",neighbor.x_start, neighbor.y_start, current.h_value);
+            printf("%i, %i, %i\n", neighbor.expanded, containObstacle(neighbor), neighbor.h_value > current.h_value + 1.0);
+            if(!neighbor.expanded&&!containObstacle(neighbor) && neighbor.h_value > current.h_value + 1.0){
+                
+                regions[current.neighbors[i]].h_value = current.h_value + 1.0;
+                openPQ.push(regions[current.neighbors[i]]);
+            }
+
+        }
+
+    }
+
+
     return;
-}
+}   

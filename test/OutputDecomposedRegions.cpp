@@ -10,6 +10,7 @@ int main(int argc, char** argv){
     WorkSpace W2 = WorkSpace(0,10,0,10);
     W2.addObstacle(o1);
     W2.Decompose();
+    W2.CalculateHeuristic(8.5,8.5);
 /** Saves the solution to output file
 	 * Do not modify the output log file output format as it is required for visualization
 	 * and for grading.
@@ -43,6 +44,7 @@ int main(int argc, char** argv){
             m_log_fstream << W2.GetRegion(i).x_extent << ",";
             m_log_fstream << W2.GetRegion(i).y_start << ",";
             m_log_fstream << W2.GetRegion(i).y_extent << ",";
+            m_log_fstream << W2.GetRegion(i).h_value << ",";
             
             m_log_fstream << std::endl;
 
