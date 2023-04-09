@@ -205,7 +205,7 @@ void WorkSpace::CalculateHeuristic(double x, double y){
     for(size_t i = 0; i < regions.size(); i++){
         if(!regions[i].splitted && regions[i].inRegion(x,y)){
             regions[i].h_value = 0.0;
-            printf("%f\n", regions[i].x_start);
+            // printf("%f\n", regions[i].x_start);
             start = regions[i];
         }
     }
@@ -224,8 +224,8 @@ void WorkSpace::CalculateHeuristic(double x, double y){
         for(size_t i = 0; i < current.neighbors.size(); i++){
             
             Region neighbor = regions[current.neighbors[i]];
-            printf("%f,%f, %f |",neighbor.x_start, neighbor.y_start, current.h_value);
-            printf("%i, %i, %i\n", neighbor.expanded, containObstacle(neighbor), neighbor.h_value > current.h_value + 1.0);
+            // printf("%f,%f, %f |",neighbor.x_start, neighbor.y_start, current.h_value);
+            // printf("%i, %i, %i\n", neighbor.expanded, containObstacle(neighbor), neighbor.h_value > current.h_value + 1.0);
             if(!neighbor.expanded&&!containObstacle(neighbor) && neighbor.h_value > current.h_value + 1.0){
                 
                 regions[current.neighbors[i]].h_value = current.h_value + 1.0;

@@ -14,7 +14,7 @@ public:
         StateSpace::VehicleState state;         // state of Node
         ControlSpace::VehicleControl control;       // Motion to the Node
 
-        Node(){};
+        Node(){id = -1;};
         Node(int id) : id(id) {}
     };
     MotionTree() : nodes(1, Node(0)) {}  // Initialize the tree with a root node (id = 0

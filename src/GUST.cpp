@@ -64,6 +64,7 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     // Getting a random double value
     double random_double = unif(re);
     if(random_double < smallProb){
+        s_target = S.getRandomState();
         // TODO: sample a state in the regions along the shortest path to goal
     }else{
         s_target = S.getRandomState();
@@ -182,8 +183,12 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     double dist = PointDistance(s_target.x_, s_target.y_, v.state.x_, v.state.y_);
     if(dist < epsilon){
         MotionTree::Node v_new = T.newVertex(s_target);
+        v_new.parent = v.id;
         new_vertices.push_back(v_new);
-        return std::make_pair(v_new, new_vertices);
+        if(goal(s_target)){
+            return std::make_pair(v_new, new_vertices);
+        }
+        return std::make_pair(MotionTree::Node(), new_vertices);
     }
     double delta_x_norm = delta_x * epsilon / dist;
     double delta_y_norm = delta_y * epsilon / dist;
@@ -215,7 +220,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         }
     }
     
-    return make_pair(NULL, new_vertices);
+    return make_pair(MotionTree::Node(), new_vertices);
 
 
 
@@ -326,22 +331,28 @@ std::vector<MotionTree::Node> GUST::RunGUST(){
     W.CalculateHeuristic(goal_region.x_start + goal_region.x_extent/2, goal_region.y_start + goal_region.y_extent/2);
 
     InitTreeAndGroups();
+    printf("Finish Init\n");
     auto start = std::chrono::high_resolution_clock::now();  
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    while((double)duration.count() < time){
+    while(true){
+        printf("Enter Loop\n");
         int groupId = SelectGroup().second;
         std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
+        
         MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
-        if(v_last.id != NULL){
+        printf("Out GroupPlanner\n");
+        if(v_last.id != -1){
+            printf("finish\n");
             return T.getPath(v_last);
         }
         if(W.GetRegion(groupId).whetherCanSplit()){
+            printf("Split\n");
             SplitGroup(groupId);
         }
         stop = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-
+        printf("Finish one loop: %f\n", (double)duration.count());
     } 
     return std::vector<MotionTree::Node>{};  
 }
