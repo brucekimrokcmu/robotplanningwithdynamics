@@ -1,6 +1,8 @@
 #include "GUST.hpp"
 #include <limits>
 #include <vector>
+#include <queue>
+#include <cmath>
 #include "WorkSpace.hpp"
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
@@ -9,12 +11,33 @@
 #define minNrSteps 500
 #define maxNrSteps 1500
 
-/*
- * Calculate heuristics of all regions
+/**
+* Initialize the tree and the groups
 */
-void GUST::CalculateHeuristics(){
-    
+void GUST::InitTreeAndGroups(){
+    T = MotionTree();
+    T.nodes[0].state = s_init;
+    double x = Proj(s_init).first;
+    double y = Proj(s_init).second;
+    T.nodes[0].region = W.LocateRegion(x,y);
+    Lambda[T.nodes[0].region].push_back(T.nodes[0]);
 }
+std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
+    // Select a group Lambda_r
+    int index = 0;
+    double max_weight = 0.0;
+    for(auto it = Lambda.begin(); it != Lambda.end(); it++){
+        double h_norm = (W.h_max - W.GetRegion(it->first).h_value)/W.h_max;
+        h_norm = delta + ( 1-delta)*h_norm;
+        double weight = std::pow(h_norm, alpha) * std::pow(beta, W.GetRegion(it->first).nsel);
+        if(max_weight < weight){
+            max_weight = weight;
+            index = it->first;
+        }
+    }
+    W.addSel(index);
+    return std::make_pair(Lambda[index], index);
+};
 
 /*
 * Samples a target uniformly at random from a region R

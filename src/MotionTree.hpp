@@ -16,7 +16,7 @@ public:
 
         Node(int id) : id(id) {}
     };
-
+    MotionTree() : nodes(1, Node(0)) {}  // Initialize the tree with a root node (id = 0
     std::vector<Node> nodes;    // Vector of nodes in the tree
 
     Node newVertex(StateSpace::VehicleState s_new);     // Add a new vertex to the tree based on a current state

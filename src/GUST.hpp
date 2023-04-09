@@ -10,7 +10,7 @@
 
 class GUST{
 public: 
-    GUST(const StateSpace& S, const WorkSpace& W, const ControlSpace& M,  
+    GUST(const StateSpace& S, WorkSpace& W, const ControlSpace& M,  
         std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
         std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
         std::function<bool(StateSpace::VehicleState)> goal)
@@ -20,7 +20,7 @@ public:
 private:
     // Input Parameters
     const StateSpace& S; 
-    const WorkSpace& W; 
+    WorkSpace& W; 
     const ControlSpace& M;  
     std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion; 
     std::function<bool(StateSpace::VehicleState)> valid;
@@ -29,6 +29,9 @@ private:
 
     // Constants
     double time; // TODO: max time to sampling
+    double delta; 
+    double alpha;
+    double beta;
 
     // Motion Tree
     MotionTree T;
@@ -37,11 +40,10 @@ private:
     std::unordered_map<int,std::vector<MotionTree::Node>> EmptyLambda;
 
     // Function Interfaces
-    void CalculateHeuristics();
     void InitTreeAndGroups();
     std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
     MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Lambda_r, int r);
-    void SplitGroup(int r);
+    // void SplitGroup(int r);
 
     // Help Functions for `GroupPlanner`
     StateSpace::VehicleState SampleTarget(int r);

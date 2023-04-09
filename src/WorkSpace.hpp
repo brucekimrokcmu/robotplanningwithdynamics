@@ -14,6 +14,7 @@ struct Region {
     double y_start;
     double x_extent;
     double y_extent;
+    int nsel = 0;
     bool splitted;
 
     std::vector<int> neighbors;
@@ -21,6 +22,8 @@ struct Region {
     bool inRegion(double x, double y){
         return x >= x_start && x < x_start+x_extent && y >= y_start && y < y_start + y_extent;
     }
+    void addSel(){
+        nsel++;}
 
     double h_value = std::numeric_limits<double>::max();
     bool expanded = false;
@@ -54,20 +57,23 @@ public:
     WorkSpace(double x_min, double x_max, double y_min, double y_max)
         : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max){};
 
+    int h_max = 0;
+
     void addObstacle(Obstacle obs){obstacles.push_back(obs);}
-    int countRegionSize() {return (int)regions.size();}
+    int countRegionSize() const{return (int)regions.size();}
     int countObstacleSize() {return (int)obstacles.size();}
     bool Check_collision(double x, double y);
     const Obstacle GetObstacle(int id){return obstacles[id];}
-    const Region GetRegion(int id);
+    Region GetRegion (int id) const;
 
     // Helper functions
     bool containObstacle(Region r);
     void decomposeHelper(Region &r);
+    void addSel(int i);
     void makeGraph();
 
     void Decompose();
     void CalculateHeuristic(double x, double y); // This is just for test, this function should belong to GUST.hpp not here
-    int LocateRegion(double x, double y);
+    int LocateRegion(double x, double y) const;
     std::vector<Region> SplitRegion(Region r);
 };

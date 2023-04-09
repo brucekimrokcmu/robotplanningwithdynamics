@@ -12,8 +12,12 @@ bool WorkSpace::Check_collision (double x, double y){
     return false;
 }
 
-const Region WorkSpace::GetRegion(int id_){
+Region WorkSpace::GetRegion(int id_) const{
     return regions[id_];
+}
+
+void WorkSpace::addSel(int id_){
+    return regions[id_].addSel();
 }
 
 
@@ -64,7 +68,7 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
  * i : the index number of region which contains (x,y)
  * 
 */
-int WorkSpace::LocateRegion(double x, double y){
+int WorkSpace::LocateRegion(double x, double y) const{
     for(int i = 0; i < regions.size(); i++ ){
         Region r = regions[i];
         if(!r.splitted && r.x_start + r.x_extent > x && r.x_start <= x && r.y_start + r.y_extent > y && r.y_start <= y ){
@@ -217,6 +221,8 @@ void WorkSpace::CalculateHeuristic(double x, double y){
             if(!neighbor.expanded&&!containObstacle(neighbor) && neighbor.h_value > current.h_value + 1.0){
                 
                 regions[current.neighbors[i]].h_value = current.h_value + 1.0;
+                if(h_max < regions[current.neighbors[i]].h_value)
+                    h_max = regions[current.neighbors[i]].h_value;
                 openPQ.push(regions[current.neighbors[i]]);
             }
 
