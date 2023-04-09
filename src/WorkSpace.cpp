@@ -50,12 +50,20 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
 
     std::vector<Region> result;
     if(up_left.x_extent != 0.0 && up_left.y_extent != 0.0)
+        up_left.h_value = r.h_value;
+        up_left.nsel = r.nsel;
         result.push_back(up_left);
     if(up_right.x_extent != 0.0 && up_right.y_extent != 0.0)
+        up_right.h_value = r.h_value;
+        up_right.nsel = r.nsel;
         result.push_back(up_right);
     if(bottom_left.x_extent != 0.0 && bottom_left.y_extent != 0.0)
+        bottom_left.h_value = r.h_value;
+        bottom_left.nsel = r.nsel;
         result.push_back(bottom_left);
     if(bottom_right.x_extent != 0.0 && bottom_right.y_extent != 0.0)
+        bottom_right.h_value = r.h_value;
+        bottom_right.nsel = r.nsel;
         result.push_back(bottom_right);
    
     return result;
@@ -233,3 +241,12 @@ void WorkSpace::CalculateHeuristic(double x, double y){
 
     return;
 }   
+
+void WorkSpace::setSplitted(int id){
+    regions[id].splitted = true;
+}
+
+void WorkSpace::addRegion(Region r){
+    r.id = (int)regions.size();
+    regions.push_back(r);
+}

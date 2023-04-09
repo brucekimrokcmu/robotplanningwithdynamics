@@ -33,6 +33,7 @@ private:
     double alpha;
     double beta;
     double smallProb;
+    double epsilon;
 
     // Motion Tree
     MotionTree T;
@@ -44,7 +45,7 @@ private:
     void InitTreeAndGroups();
     std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
     MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Lambda_r, int r);
-    // void SplitGroup(int r);
+    void SplitGroup(int r);
 
     // Help Functions for `GroupPlanner`
     StateSpace::VehicleState SampleTarget(int r);

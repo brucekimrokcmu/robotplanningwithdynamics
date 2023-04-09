@@ -70,6 +70,8 @@ public:
     bool containObstacle(Region r);
     void decomposeHelper(Region &r);
     void addSel(int i);
+    void setSplitted(int i);
+    void addRegion(Region r);
     void makeGraph();
 
     void Decompose();

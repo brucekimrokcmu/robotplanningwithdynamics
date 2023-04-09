@@ -276,3 +276,43 @@ MotionTree::Node GUST::GroupPlanner(
     return v_last;
 
 }
+
+/*
+* SplitGroup
+*/
+void GUST::SplitGroup(int r){
+    std::vector<Region> new_regions = W.SplitRegion(W.GetRegion(r));
+    if(new_regions.size() == 0){
+        return;
+    }
+    else{
+        W.setSplitted(r);
+        for (auto &region : new_regions)
+        {
+            W.addRegion(region);
+            std::vector<MotionTree::Node> vertex_list;
+            for(auto &v : Lambda.find(r)->second){
+                if(W.LocateRegion(v.state.x_, v.state.y_) == region.id){
+                    v.region = region.id;
+                    vertex_list.push_back(v);
+                }
+            }
+            if(vertex_list.size() == 0){
+                EmptyLambda.insert(
+                    make_pair(
+                        region.id, vertex_list
+                    )
+                );
+                
+            }else{
+                Lambda.insert(
+                    make_pair(
+                        region.id, vertex_list
+                    )
+                );
+            }
+            
+        }
+        
+    }
+}
