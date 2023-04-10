@@ -19,12 +19,12 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
 
     // Calculate PID components
     double P_acc = Kp_acc * error_acc;
-    double I_acc = Ki_acc * (error_acc + prev_error_acc) * dt;
+    double I_acc = Ki_acc * (total_error_acc);
     double D_acc = Kd_acc * (error_acc - prev_error_acc) / dt;
     double u_acc = P_acc + I_acc + D_acc;
 
     double P_steering = Kp_steering * error_steering;
-    double I_steering = Ki_steering * (error_steering + prev_error_steering) * dt;
+    double I_steering = Ki_steering * (total_error_steering);
     double D_steering = Kd_steering * (error_steering - prev_error_steering) / dt;
     double u_steering_rate = P_steering + I_steering + D_steering;
 
