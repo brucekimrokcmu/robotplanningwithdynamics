@@ -1,1 +1,2 @@
-g++ -g src/WorkSpace.cpp src/GUST.cpp src/MotionTree.cpp src/StateSpace.hpp test/testGUST.cpp -o GUSTOut.out
+g++ -g src/WorkSpace.cpp src/GUST.cpp src/MotionTree.cpp test/testGUST.cpp -o GUSTOut.out
+# clang++ -std=c++11 -stdlib=libc++ -o GUSTOut.out src/WorkSpace.cpp src/GUST.cpp src/MotionTree.cpp test/testGUST.cpp

@@ -55,12 +55,16 @@ int main(int argc, char** argv){
 
     // ! Running GUST
     GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
-    std::vector<MotionTree::Node> result = gust.RunGUST();
+    std::vector<MotionTree::Node> allNodes;
+    std::vector<MotionTree::Node> result = gust.RunGUST(allNodes);
+    assert(allNodes.size() > 0);
 
     // Printing the solution
     for(auto n : result){
         std::cout << n.state.x_ << " " << n.state.y_  << std::endl;
     }
+
+    
 
     /** 
      * Saves the solution to output file
@@ -105,6 +109,12 @@ int main(int argc, char** argv){
     for (size_t i = 0; i < result.size() ; i++) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
+            m_log_fstream << std::endl;
+	}
+    m_log_fstream << std::endl;
+    for (size_t i = 0; i < allNodes.size() ; i++) {
+            m_log_fstream << allNodes[i].state.x_ << ",";
+            m_log_fstream << allNodes[i].state.y_ << ","; 
             m_log_fstream << std::endl;
 	}
 

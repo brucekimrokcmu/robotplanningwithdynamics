@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.java": "java",
     "atomic": "cpp",
     "bit": "cpp",
     "cmath": "cpp",
@@ -31,6 +32,31 @@
     "xstddef": "cpp",
     "xstring": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "array": "cpp",
+    "*.tcc": "cpp",
+    "cctype": "cpp",
+    "chrono": "cpp",
+    "clocale": "cpp",
+    "cstdarg": "cpp",
+    "cwctype": "cpp",
+    "deque": "cpp",
+    "algorithm": "cpp",
+    "iterator": "cpp",
+    "memory_resource": "cpp",
+    "numeric": "cpp",
+    "optional": "cpp",
+    "random": "cpp",
+    "ratio": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "system_error": "cpp",
+    "fstream": "cpp",
+    "iostream": "cpp",
+    "istream": "cpp",
+    "ostream": "cpp",
+    "sstream": "cpp",
+    "stdexcept": "cpp",
+    "streambuf": "cpp"
   }
 }

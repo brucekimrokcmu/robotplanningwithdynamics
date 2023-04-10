@@ -17,7 +17,7 @@ public:
         std::function<bool(StateSpace::VehicleState)> goal, Region goal_region)
             : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal), goal_region(goal_region){}
     
-    std::vector<MotionTree::Node> RunGUST();  // Main function to Run GUST
+    std::vector<MotionTree::Node> RunGUST(std::vector<MotionTree::Node> &allNodes);  // Main function to Run GUST
 private:
     // Input Parameters
     StateSpace& S; 

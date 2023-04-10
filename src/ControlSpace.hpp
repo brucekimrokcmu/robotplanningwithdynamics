@@ -7,7 +7,7 @@ public:
         //TODO: implement vehicle control
     };
     ControlSpace( double maxAcceleration, double maxSteeringrate)
-        : maxAcceleration(maxAcceleration), maxSteeringRate(maxSteeringRate){};
+        : maxAcceleration(maxAcceleration), maxSteeringRate(maxSteeringrate){};
     // Constructor that initializes the motion space with the given parameters
     
     bool IsValidControl(double acc, double ste) const;

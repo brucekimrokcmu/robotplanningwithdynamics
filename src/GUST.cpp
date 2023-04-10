@@ -182,6 +182,9 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     double delta_y = s_target.y_ - v.state.y_;
     double dist = PointDistance(s_target.x_, s_target.y_, v.state.x_, v.state.y_);
     if(dist < epsilon){
+        if(!valid(s_target)){
+            return std::make_pair(MotionTree::Node(), new_vertices);
+        }
         MotionTree::Node v_new = T.newVertex(s_target);
         v_new.parent = v.id;
         new_vertices.push_back(v_new);
@@ -201,10 +204,11 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         s_new.theta_ = v.state.theta_;
         s_new.v_ = v.state.v_;
         s_new.phi_= v.state.phi_;
-        MotionTree::Node v_new = T.newVertex(s_new);
+        
         if(!valid(s_new)){
             return std::make_pair(MotionTree::Node(), new_vertices);
         }
+        MotionTree::Node v_new = T.newVertex(s_new);
         v_new.parent = v_parent.id;
         v_new.region = W.LocateRegion(s_new.x_, s_new.y_);
         v_new.state = s_new;
@@ -326,7 +330,7 @@ void GUST::SplitGroup(int r){
 //************************* GUST Function **************************
 //******************************************************************
 
-std::vector<MotionTree::Node> GUST::RunGUST(){
+std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNodes){
     W.Decompose();
     W.CalculateHeuristic(goal_region.x_start + goal_region.x_extent/2, goal_region.y_start + goal_region.y_extent/2);
 
@@ -335,7 +339,7 @@ std::vector<MotionTree::Node> GUST::RunGUST(){
     auto start = std::chrono::high_resolution_clock::now();  
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    while(true){
+    while(true){ // TODO: change to max time
         printf("Enter Loop\n");
         int groupId = SelectGroup().second;
         std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
@@ -344,6 +348,7 @@ std::vector<MotionTree::Node> GUST::RunGUST(){
         printf("Out GroupPlanner\n");
         if(v_last.id != -1){
             printf("finish\n");
+            allNodes = T.nodes;
             return T.getPath(v_last);
         }
         if(W.GetRegion(groupId).whetherCanSplit()){
