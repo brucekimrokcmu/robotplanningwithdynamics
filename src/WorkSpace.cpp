@@ -88,18 +88,22 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
     if(up_left.x_extent != 0.0 && up_left.y_extent != 0.0)
         up_left.h_value = r.h_value;
         up_left.nsel = r.nsel;
+        up_left.splitted = false;
         result.push_back(up_left);
     if(up_right.x_extent != 0.0 && up_right.y_extent != 0.0)
         up_right.h_value = r.h_value;
         up_right.nsel = r.nsel;
+        up_right.splitted = false;
         result.push_back(up_right);
     if(bottom_left.x_extent != 0.0 && bottom_left.y_extent != 0.0)
         bottom_left.h_value = r.h_value;
         bottom_left.nsel = r.nsel;
+        bottom_left.splitted = false;
         result.push_back(bottom_left);
     if(bottom_right.x_extent != 0.0 && bottom_right.y_extent != 0.0)
         bottom_right.h_value = r.h_value;
         bottom_right.nsel = r.nsel;
+        bottom_right.splitted = false;
         result.push_back(bottom_right);
    
     return result;
@@ -239,6 +243,9 @@ struct Comparator{
 void WorkSpace::CalculateHeuristic(double x, double y){
     Region start;
     for(size_t i = 0; i < regions.size(); i++){
+        if(regions[i].inRegion(x,y)){
+            printf("Here");
+        }
         if(!regions[i].splitted && regions[i].inRegion(x,y)){
             regions[i].h_value = 0.0;
             // printf("%f\n", regions[i].x_start);
