@@ -203,7 +203,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         s_new.phi_= v.state.phi_;
         MotionTree::Node v_new = T.newVertex(s_new);
         if(!valid(s_new)){
-            return std::make_pair<MotionTree::Node, std::vector<MotionTree::Node>>({}, {});
+            return std::make_pair(MotionTree::Node(), new_vertices);
         }
         v_new.parent = v_parent.id;
         v_new.region = W.LocateRegion(s_new.x_, s_new.y_);

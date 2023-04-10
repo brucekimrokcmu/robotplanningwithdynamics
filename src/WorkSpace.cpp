@@ -3,6 +3,29 @@
 
 #include "WorkSpace.hpp"
 
+/**
+ *  Set `splitted` to true
+ * @param id : region id
+*/
+void WorkSpace::setSplitted(int id){
+    regions[id].splitted = true;
+}
+
+/**
+ * Add a new region to `regions`, and set id as `regions.size()`.
+ * @param r : region
+*/
+void WorkSpace::addRegion(Region r){
+    r.id = (int)regions.size();
+    regions.push_back(r);
+}
+
+/**
+* @param x,y: position
+* @return 
+* true: collision
+* false: no collision
+*/
 bool WorkSpace::Check_collision (double x, double y){
     for(auto r : obstacles){
         if (r.isObstacle(x,y)){
@@ -12,15 +35,28 @@ bool WorkSpace::Check_collision (double x, double y){
     return false;
 }
 
+/**
+* @param id_ : region id
+* @return Region
+*/
 Region WorkSpace::GetRegion(int id_) const{
     return regions[id_];
 }
 
+/**
+ * add 1 to the number of `nsel` in region id_
+* @param id_ : region id
+*/
 void WorkSpace::addSel(int id_){
     return regions[id_].addSel();
 }
 
-
+/**
+ *  Each region is split into 4 regions (subdivision)
+* Each new region inharits the `h_value` and `nsel` from the parent region
+* @param id_ : region id
+* @return new regions after split
+*/
 std::vector<Region> WorkSpace::SplitRegion(Region r){
     Region up_left;
     Region up_right;
@@ -71,6 +107,7 @@ std::vector<Region> WorkSpace::SplitRegion(Region r){
 }
 
 /**
+ * @param x,y: position
  * @return 
  * -1: can't find region contain position (x,y)
  * i : the index number of region which contains (x,y)
@@ -87,7 +124,11 @@ int WorkSpace::LocateRegion(double x, double y) const{
 
 }
 
-
+/**
+ * @param r : region
+ * @return true: region r contains obstacle
+ *        false: region r does not contain obstacle 
+*/
 bool WorkSpace::containObstacle(Region r){
     for(auto obs : obstacles){
         if(
@@ -106,6 +147,10 @@ bool WorkSpace::containObstacle(Region r){
     return false;
 }
 
+/**
+ * Helper function for `Decopose()`, doing recursive split.
+ * @param r : region
+*/
 void WorkSpace::decomposeHelper(Region &r){
     if(r.x_extent < SMALLESTEXTENT || r.y_extent < SMALLESTEXTENT){
         return;
@@ -126,6 +171,9 @@ void WorkSpace::decomposeHelper(Region &r){
 
 }
 
+/**
+ * adding neighbors to each region
+*/
 void WorkSpace::makeGraph(){
     for(size_t i = 0; i < regions.size(); i++){
         Region r = regions[i];
@@ -139,17 +187,6 @@ void WorkSpace::makeGraph(){
                         continue;
                     }
 
-                    // right top
-                    // if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start == r.y_start+r.y_extent){
-                    //     regions[i].neighbors.push_back(j);
-                    // }
-
-                    // right bottom
-                    // if(r_n.x_start == r.x_start+r.x_extent && r_n.y_start + r_n.y_extent >= r.y_start){
-                    //     regions[i].neighbors.push_back(j);
-                    //     continue;
-                    // }
-
                     // bottom
                     if(r_n.x_start <= r.x_start+r.x_extent && r_n.y_start + r_n.y_extent == r.y_start && r_n.x_start + r_n.x_extent >= r.x_start){
                         regions[i].neighbors.push_back(j);
@@ -162,27 +199,21 @@ void WorkSpace::makeGraph(){
                         continue;
                     }
 
-                    // top left
-                    // if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start == r.y_start + r.y_extent){
-                    //     regions[i].neighbors.push_back(j);
-                    // }
-
                     // left
                     if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start +r_n.y_extent >= r.y_start && r_n.y_start <= r.y_start + r.y_extent){
                         regions[i].neighbors.push_back(j);
                         continue;
                     }
-
-                    // bottom left
-                    // if(r_n.x_start + r_n.x_extent == r.x_start && r_n.y_start + r_n.y_extent == r.y_start){
-                    //     regions[i].neighbors.push_back(j);
-                    // }
                 }
             }
         }
     }
 }
 
+/**
+ * Decomposition at the very beginning of GUST
+ * ! Called in `GUST::RunGUST()`
+*/
 void WorkSpace::Decompose(){
     // Start Region 
     Region start = Region(x_min,y_min,x_max-x_min, y_max-y_min);
@@ -193,13 +224,18 @@ void WorkSpace::Decompose(){
     return;
 }
 
-//TODO: Need Implement -- Calculate Heuristic value for each region
+
 struct Comparator{
     bool operator()(Region& a, Region& b){
         return a.h_value > b.h_value;
     }
 };
 
+/**
+ * Calculate heuristic value for each region
+ * @param x,y : goal position
+ * ! Called in `GUST::RunGUST()` 
+*/
 void WorkSpace::CalculateHeuristic(double x, double y){
     Region start;
     for(size_t i = 0; i < regions.size(); i++){
@@ -241,12 +277,3 @@ void WorkSpace::CalculateHeuristic(double x, double y){
 
     return;
 }   
-
-void WorkSpace::setSplitted(int id){
-    regions[id].splitted = true;
-}
-
-void WorkSpace::addRegion(Region r){
-    r.id = (int)regions.size();
-    regions.push_back(r);
-}

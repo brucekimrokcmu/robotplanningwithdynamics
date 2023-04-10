@@ -17,16 +17,30 @@ public:
         Node(){id = -1;};
         Node(int id) : id(id) {}
     };
-    MotionTree() : nodes(1, Node(0)) {}  // Initialize the tree with a root node (id = 0
+    /**
+     * Initialize the tree with a root node (id = 0)
+    */
+    MotionTree() : nodes(1, Node(0)) {}
+    
     std::vector<Node> nodes;    // Vector of nodes in the tree
 
-    Node newVertex(StateSpace::VehicleState s_new);     // Add a new vertex to the tree based on a current state
-    Node getNode(int id);                               // Get a node from the tree based on its ID
-    std::vector<Node> getPath(Node v_last);             // Get the path from the root to a node
-    // These functions below shouldn't be necessary since they
-    // can be accessed/set through the Node struct
-    //void parent(Node& n_, int parent_);
-    //void state(Node& n_, StateSpace::VehicleState s_);
-    //void control(Node& n_, ControlSpace::VehicleControl m_);
+    /**
+     * Add a new vertex to the tree based on a current state
+     * @param s_new : VehicleState
+     * @return new Node
+    */
+    Node newVertex(StateSpace::VehicleState s_new);    
+    /**
+     * Get a node from the tree based on its ID
+     * @param id : ID of the node
+     * @return Node
+    */
+    Node getNode(int id);             
+    /**
+     * Get the path from the root to a node
+     * @param v_last : Node (last node in the path)
+     * @return vector of Nodes (path)
+    */                  
+    std::vector<Node> getPath(Node v_last);         
     
 };

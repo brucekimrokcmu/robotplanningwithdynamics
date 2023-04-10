@@ -20,6 +20,11 @@ public:
     };
     StateSpace(double maxX, double maxY, double maxHeadingAngle, double maxSpeed, double maxSteering)
         : maxX(maxX), maxY(maxY),maxHeadingAngle(maxHeadingAngle), maxSpeed(maxSpeed), maxSteering(maxSteering){};
+    
+    /**
+     * TODO: need change when implementing controller
+     * @return random VehicleState
+    */
     VehicleState getRandomState(){
  
         double x = (double)rand() / RAND_MAX * maxX;

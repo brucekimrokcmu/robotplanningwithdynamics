@@ -60,16 +60,34 @@ public:
     WorkSpace(double x_min, double x_max, double y_min, double y_max)
         : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max){};
 
-    int h_max = 0;
+    int h_max = std::numeric_limits<int>::max();
 
+    /**
+     * @param obs : obstacle
+     * add obstacle to the workspace
+    */
     void addObstacle(Obstacle obs){obstacles.push_back(obs);}
+
+    /**
+     * return the number of regions
+    */
     int countRegionSize() const{return (int)regions.size();}
+
+    /**
+     * return the number of obstacles
+    */
     int countObstacleSize() {return (int)obstacles.size();}
-    bool Check_collision(double x, double y);
+
+    /**
+     * @param id : id of the region
+     * return the obstacle with the id
+    */
     const Obstacle GetObstacle(int id){return obstacles[id];}
+
+   
+    bool Check_collision(double x, double y);
     Region GetRegion (int id) const;
 
-    // Helper functions
     bool containObstacle(Region r);
     void decomposeHelper(Region &r);
     void addSel(int i);
@@ -78,7 +96,7 @@ public:
     void makeGraph();
 
     void Decompose();
-    void CalculateHeuristic(double x, double y); // This is just for test, this function should belong to GUST.hpp not here
+    void CalculateHeuristic(double x, double y); 
     int LocateRegion(double x, double y) const;
     std::vector<Region> SplitRegion(Region r);
 };
