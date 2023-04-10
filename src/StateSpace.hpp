@@ -1,4 +1,9 @@
 #pragma once
+#include <vector>
+#include <limits>
+#include <iostream>
+#include <cmath>
+#include <random>
 class StateSpace{
 
 public:
@@ -16,7 +21,7 @@ public:
 
     StateSpace(double maxX, double maxY, double maxHeadingAngle, double maxSpeed, double maxSteering)
         : maxX(maxX), maxY(maxY),maxHeadingAngle(maxHeadingAngle), maxSpeed(maxSpeed), maxSteering(maxSteering){};
-    VehicleState GetRandomState(int r);
+    VehicleState GetRandoState(int r);
     bool NearTarget(VehicleState s_new, VehicleState s_target);
     bool IsValidState();
     
