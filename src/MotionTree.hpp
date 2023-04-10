@@ -41,6 +41,18 @@ public:
      * @param v_last : Node (last node in the path)
      * @return vector of Nodes (path)
     */                  
-    std::vector<Node> getPath(Node v_last);         
+    std::vector<Node> getPath(Node v_last);       
+
+    void addChild(int id_, int child_id){
+        nodes[id_].children.push_back(child_id);
+    }  
+
+    void setParent(int id_, int parent_id){
+        nodes[id_].parent = parent_id;
+    }  
+    
+    void setRegion(int id_, int region_id){
+        nodes[id_].region = region_id;
+    }  
     
 };

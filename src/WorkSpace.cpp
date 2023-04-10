@@ -243,9 +243,6 @@ struct Comparator{
 void WorkSpace::CalculateHeuristic(double x, double y){
     Region start;
     for(size_t i = 0; i < regions.size(); i++){
-        if(regions[i].inRegion(x,y)){
-            printf("Here");
-        }
         if(!regions[i].splitted && regions[i].inRegion(x,y)){
             regions[i].h_value = 0.0;
             // printf("%f\n", regions[i].x_start);

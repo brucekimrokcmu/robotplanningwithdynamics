@@ -186,10 +186,16 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
             return std::make_pair(MotionTree::Node(), new_vertices);
         }
         MotionTree::Node v_new = T.newVertex(s_target);
-        v_new.parent = v.id;
-        new_vertices.push_back(v_new);
+        if(v_new.id == 1){
+            std::cout << "child ID " << v_new.parent << std::endl;
+            std::cout << "child selfID " << v_new.id << std::endl;
+        }
+        T.setParent(v_new.id, v.id);
+        T.addChild(v.id, v_new.id);
+        new_vertices.push_back(T.getNode(v_new.id));
+        
         if(goal(s_target)){
-            return std::make_pair(v_new, new_vertices);
+            return std::make_pair(T.getNode(v_new.id), new_vertices);
         }
         return std::make_pair(MotionTree::Node(), new_vertices);
     }
@@ -209,19 +215,21 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
             return std::make_pair(MotionTree::Node(), new_vertices);
         }
         MotionTree::Node v_new = T.newVertex(s_new);
-        v_new.parent = v_parent.id;
-        v_new.region = W.LocateRegion(s_new.x_, s_new.y_);
-        v_new.state = s_new;
-        v_new.id = T.nodes.size();
-        v.children.push_back(v_new.id);
+        // printf("ID: %d\n", v_new.id);
+        // assert(v_parent.id != 0);
+        
+        T.setParent(v_new.id, v_parent.id);
+        T.setRegion(v_new.id, W.LocateRegion(s_new.x_, s_new.y_));
+        T.addChild(v_parent.id, v_new.id);
         // Need control but now just leave it blank for test
-        new_vertices.push_back(v_new);
+        new_vertices.push_back(T.getNode(v_new.id));
         v_parent = v_new;
         delta_x_norm += epsilon * delta_x / dist;
         delta_y_norm += epsilon * delta_y / dist;
         if(goal(s_new)){
-            return std::make_pair(v_new, new_vertices);
+            return std::make_pair(T.getNode(v_new.id), new_vertices);
         }
+
     }
     
     return make_pair(MotionTree::Node(), new_vertices);
@@ -335,29 +343,29 @@ std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNo
     W.CalculateHeuristic(goal_region.x_start + goal_region.x_extent/2, goal_region.y_start + goal_region.y_extent/2);
 
     InitTreeAndGroups();
-    printf("Finish Init\n");
+    // printf("Finish Init\n");
     auto start = std::chrono::high_resolution_clock::now();  
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     while(true){ // TODO: change to max time
-        printf("Enter Loop\n");
+        // printf("Enter Loop\n");
         int groupId = SelectGroup().second;
         std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
         
         MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
-        printf("Out GroupPlanner\n");
+        // printf("Out GroupPlanner\n");
         if(v_last.id != -1){
             printf("finish\n");
             allNodes = T.nodes;
             return T.getPath(v_last);
         }
         if(W.GetRegion(groupId).whetherCanSplit()){
-            printf("Split\n");
+            // printf("Split\n");
             SplitGroup(groupId);
         }
         stop = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        printf("Finish one loop: %f\n", (double)duration.count());
+        // printf("Finish one loop: %f\n", (double)duration.count());
     } 
     return std::vector<MotionTree::Node>{};  
 }

@@ -29,7 +29,7 @@ public:
  
         double x = (double)rand() / RAND_MAX * maxX;
         double y = (double)rand() / RAND_MAX * maxY;
-        printf("%f, %f\n", x, y);
+        // printf("%f, %f\n", x, y);
         double theta = (double)rand() / RAND_MAX * maxHeadingAngle;
         double v = (double)rand() / RAND_MAX * maxSpeed;
         double phi = (double)rand() / RAND_MAX * maxSteering;
