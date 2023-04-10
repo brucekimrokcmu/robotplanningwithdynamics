@@ -182,6 +182,9 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     double delta_y = s_target.y_ - v.state.y_;
     double dist = PointDistance(s_target.x_, s_target.y_, v.state.x_, v.state.y_);
     if(dist < epsilon){
+        if(!valid(s_target)){
+            return std::make_pair(MotionTree::Node(), new_vertices);
+        }
         MotionTree::Node v_new = T.newVertex(s_target);
         v_new.parent = v.id;
         new_vertices.push_back(v_new);
