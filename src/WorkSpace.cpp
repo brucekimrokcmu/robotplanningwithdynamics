@@ -254,6 +254,7 @@ void WorkSpace::CalculateHeuristic(double x, double y){
   
     std::priority_queue <Region, std::vector<Region>, Comparator> openPQ;
     openPQ.push(start);
+    int maxH = 0;
     while(openPQ.size() != 0){
         
         Region current = openPQ.top();
@@ -266,9 +267,14 @@ void WorkSpace::CalculateHeuristic(double x, double y){
             Region neighbor = regions[current.neighbors[i]];
             // printf("%f,%f, %f |",neighbor.x_start, neighbor.y_start, current.h_value);
             // printf("%i, %i, %i\n", neighbor.expanded, containObstacle(neighbor), neighbor.h_value > current.h_value + 1.0);
-            if(!neighbor.expanded&&!containObstacle(neighbor) && neighbor.h_value > current.h_value + 1.0){
+            if(!neighbor.expanded && neighbor.h_value > current.h_value + 1.0){
                 
-                regions[current.neighbors[i]].h_value = current.h_value + 1.0;
+                if(containObstacle(neighbor)){
+                     regions[current.neighbors[i]].h_value = current.h_value + 10.0;
+                }else{
+                    regions[current.neighbors[i]].h_value = current.h_value + 1.0;
+                }
+                
                 if(h_max < regions[current.neighbors[i]].h_value)
                     h_max = regions[current.neighbors[i]].h_value;
                 openPQ.push(regions[current.neighbors[i]]);

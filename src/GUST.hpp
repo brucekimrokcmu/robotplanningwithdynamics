@@ -35,7 +35,7 @@ private:
     double alpha = 8;
     double beta = 0.85;
     double smallProb = 0.15;
-    double epsilon = 0.8;
+    double epsilon = 0.5;
 
     // Motion Tree
     MotionTree T;

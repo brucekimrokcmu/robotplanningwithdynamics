@@ -103,10 +103,10 @@ MotionTree::Node GUST::SelectVertex(
 
     MotionTree::Node v_closest;
     double minDist = std::numeric_limits<double>::max();
-
+    // printf("newone\n");
     // Find vertex closest to s_target
     for (auto v : Lambda_r) {
-
+        // printf("enter\n");
         std::pair<double,double> p_curr = GUST::Proj(v.state);
 
         double dist = PointDistance(
@@ -114,10 +114,12 @@ MotionTree::Node GUST::SelectVertex(
             p_curr.first, p_curr.second);
         
         if (dist < minDist) {
+            // printf("here\n");
             v_closest = v;
             minDist = dist;
         }
     }
+
 
     return v_closest;
 
@@ -186,11 +188,12 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
             return std::make_pair(MotionTree::Node(), new_vertices);
         }
         MotionTree::Node v_new = T.newVertex(s_target);
-        if(v_new.id == 1){
-            std::cout << "child ID " << v_new.parent << std::endl;
-            std::cout << "child selfID " << v_new.id << std::endl;
-        }
+        // if(v_new.id == 1){
+        //     std::cout << "child ID " << v_new.parent << std::endl;
+        //     std::cout << "child selfID " << v_new.id << std::endl;
+        // }
         T.setParent(v_new.id, v.id);
+       
         T.addChild(v.id, v_new.id);
         new_vertices.push_back(T.getNode(v_new.id));
         
@@ -220,10 +223,11 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         
         T.setParent(v_new.id, v_parent.id);
         T.setRegion(v_new.id, W.LocateRegion(s_new.x_, s_new.y_));
+        
         T.addChild(v_parent.id, v_new.id);
         // Need control but now just leave it blank for test
         new_vertices.push_back(T.getNode(v_new.id));
-        v_parent = v_new;
+        v_parent = T.getNode(v_new.id);
         delta_x_norm += epsilon * delta_x / dist;
         delta_y_norm += epsilon * delta_y / dist;
         if(goal(s_new)){
@@ -268,7 +272,7 @@ MotionTree::Node GUST::GroupPlanner(
             // Add r_new back to Lambda
             Lambda.insert(
                 make_pair(
-                    r_new, vertex_list
+                    r_new, std::vector<MotionTree::Node>{v_new}
                 )
             );
         }
@@ -277,7 +281,7 @@ MotionTree::Node GUST::GroupPlanner(
             std::pair<int,std::vector<MotionTree::Node>> new_group = NewGroup(r_new, v_new);
             int r_new_new = new_group.first;
             std::vector<MotionTree::Node> vertex_list = new_group.second;
-
+ 
             // Add r_new_new to Lambda
             Lambda.insert(
                 make_pair(
@@ -307,6 +311,7 @@ void GUST::SplitGroup(int r){
         for (auto &region : new_regions)
         {
             W.addRegion(region);
+            
             std::vector<MotionTree::Node> vertex_list;
             for(auto &v : Lambda.find(r)->second){
                 if(W.LocateRegion(v.state.x_, v.state.y_) == region.id){
@@ -314,6 +319,7 @@ void GUST::SplitGroup(int r){
                     vertex_list.push_back(v);
                 }
             }
+            
             if(vertex_list.size() == 0){
                 EmptyLambda.insert(
                     make_pair(
@@ -322,6 +328,7 @@ void GUST::SplitGroup(int r){
                 );
                 
             }else{
+
                 Lambda.insert(
                     make_pair(
                         region.id, vertex_list
@@ -330,6 +337,7 @@ void GUST::SplitGroup(int r){
             }
             
         }
+        Lambda.erase(r);
         
     }
 }
@@ -351,7 +359,9 @@ std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNo
         // printf("Enter Loop\n");
         int groupId = SelectGroup().second;
         std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
-        
+        if(Lambda_r.size() == 0){
+            printf("wrong\n");
+        }
         MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
         // printf("Out GroupPlanner\n");
         if(v_last.id != -1){
