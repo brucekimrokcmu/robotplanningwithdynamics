@@ -1,13 +1,11 @@
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
 
-#define PI 3.14159265358979323846  /* pi */
 
-
-
-
-ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target, double dt)
+ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target)
 {
+    double u_acc, u_steering_rate;
+    // P, I, D controls
     const double Kp_acc = 10.0;
     const double Ki_acc = 0.1;
     const double Kd_acc = 0.1;
@@ -19,20 +17,32 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
     double error_acc = s_target.v_ - s_current.v_;
     double error_steering = s_target.phi_ - s_current.phi_;
 
+    //
+    double total_error_ecc = GetTotalErrorAcc();
+    double prev_error_acc = GetPrevErrorAcc();
+    double total_error_steering = GetTotalErrorSteering();
+    double prev_error_steering = GetPrevErrorSteering();
+
     // Calculate PID components
     double P_acc = Kp_acc * error_acc;
-    double I_acc = Ki_acc * (total_error_acc);
-    double D_acc = Kd_acc * (error_acc - prev_error_acc) / dt;
-    double u_acc = P_acc + I_acc + D_acc;
+    double I_acc = Ki_acc * (total_error_ecc);
+    double D_acc = Kd_acc * (error_acc - prev_error_acc);
 
     double P_steering = Kp_steering * error_steering;
     double I_steering = Ki_steering * (total_error_steering);
-    double D_steering = Kd_steering * (error_steering - prev_error_steering) / dt;
-    double u_steering_rate = P_steering + I_steering + D_steering;
+    double D_steering = Kd_steering * (error_steering - prev_error_steering);
+    
+
+    u_acc = P_acc + I_acc + D_acc;
+    
+    
+    u_steering_rate = P_steering + I_steering + D_steering;
 
     // Update previous errors
-    prev_error_acc = error_acc;
-    prev_error_steering = error_steering;
+    SetPrevErrorAcc(error_acc);
+    SetPrevErrorSteering(error_steering);
+    SetTotalErrorAcc(total_error_ecc + error_acc);
+    SetTotalErrorSteering(total_error_steering + error_steering);
 
     // Return control input
     return {u_acc, u_steering_rate};
