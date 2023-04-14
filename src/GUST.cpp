@@ -115,7 +115,6 @@ MotionTree::Node GUST::SelectVertex(
             p_curr.first, p_curr.second);
         
         if (dist < minDist) {
-            // printf("here\n");
             v_closest = v;
             minDist = dist;
         }
@@ -150,8 +149,6 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         u = M.PIDController(v.state, s_target, dt);
     }
 
-    
-
     int numIter = rand()%(maxNrSteps-minNrSteps + 1) + minNrSteps;
     MotionTree::Node v_parent = v;
     // // TODO: Implement PID controller, Runge-Katta integration for motion,
@@ -178,13 +175,14 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         if (goal(s_new)) {
             return std::make_pair(T.getNode(v_new.id), new_vertices);
         }
-        if (StateSpace::nearTarget(s_new, s_target)) {
+        if (S.nearTarget(s_new, s_target)) {
              return std::make_pair(MotionTree::Node(), new_vertices);
         }
 
     //     v = v_new;
     }
     return std::make_pair(MotionTree::Node(), new_vertices);
+
     // ******************* FOR TEST (without PIDController) ****************
     // std::vector<MotionTree::Node> new_vertices;
     // double delta_x = s_target.x_ - v.state.x_;
