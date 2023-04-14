@@ -14,7 +14,7 @@ class ControlSpace{
             double steering_rate;
         };
 
-        ControlSpace(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target) 
+        ControlSpace() 
         :   mtotal_error_acc(0), 
             mtotal_error_steering(0),
             mprev_error_acc(0),
