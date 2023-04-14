@@ -22,7 +22,7 @@ int main(int argc, char** argv){
     // Making a state space
     StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/2);
     // Making a control space (random we don't need this for now)
-    ControlSpace C = ControlSpace(1, 1);
+    ControlSpace C = ControlSpace();
     // motion function (we don't need this for now)
      std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)>
          motion = [&](StateSpace::VehicleState s, ControlSpace::VehicleControl c, double dt){
