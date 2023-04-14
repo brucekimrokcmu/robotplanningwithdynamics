@@ -23,7 +23,6 @@ class ControlSpace{
         {
             
         }
-      
         VehicleControl PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target, double dt);
         // ControlSpace::VehicleControl Control();
 
