@@ -34,7 +34,7 @@ private:
     double delta = 0.5; 
     double alpha = 8;
     double beta = 0.85;
-    double smallProb = 0.15;
+    double smallProb = 0.2;
     double epsilon = 0.5;
 
     // Motion Tree

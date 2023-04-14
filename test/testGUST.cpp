@@ -21,8 +21,10 @@ int main(int argc, char** argv){
 
     // Making a state space
     StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/2);
+    // Initial state
+    StateSpace::VehicleState s_init = StateSpace::VehicleState(0,0,0,0,0);
     // Making a control space (random we don't need this for now)
-    ControlSpace C = ControlSpace(0,0,0,0);
+    ControlSpace C = ControlSpace();
     // motion function (we don't need this for now)
      std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)>
          motion = [&](StateSpace::VehicleState s, ControlSpace::VehicleControl c, double dt){
@@ -30,8 +32,7 @@ int main(int argc, char** argv){
         // TODO: Implement this function
         return s_new;
     };
-    // Initial state
-    StateSpace::VehicleState s_init = StateSpace::VehicleState(0,0,0,0,0);
+    
 
     // Goal region
     Region goal_region = Region(18,18,0.5,0.5); 
@@ -109,6 +110,9 @@ int main(int argc, char** argv){
     for (size_t i = 0; i < result.size() ; i++) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
+            m_log_fstream << result[i].state.v_ << ","; 
+            m_log_fstream << result[i].state.theta_ << ","; 
+            m_log_fstream << result[i].state.phi_ << ","; 
             m_log_fstream << std::endl;
 	}
     m_log_fstream << std::endl;

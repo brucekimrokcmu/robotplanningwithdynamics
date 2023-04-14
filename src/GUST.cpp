@@ -145,16 +145,13 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     if (!usePID) {
         u = M.RandomController();
     }
-    else{
-        u = M.PIDController(v.state, s_target, dt);
-    }
 
     int numIter = rand()%(maxNrSteps-minNrSteps + 1) + minNrSteps;
     MotionTree::Node v_parent = v;
     // // TODO: Implement PID controller, Runge-Katta integration for motion,
     for (int k=1; k<numIter; k++) {
         if (usePID) {
-            u = M.PIDController(v.state, s_target, dt);
+            u = M.PIDController(v.state, s_target);
         }
 
     //     // TODO: implement motion function --> this should be passed in as an arg to the GUST constructor.

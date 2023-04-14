@@ -16,11 +16,11 @@ class MotionSpace : StateSpace, ControlSpace
           
         StateSpace::VehicleState Dynamics(StateSpace::VehicleState& s_curr, ControlSpace& u)
         {
-            double x = s_curr[0];
-            double y = s_curr[1];
-            double theta = s_curr[2];
-            double v = s_curr[3];
-            double psi = s_curr[4];
+            double x = s_curr.x_;
+            double y = s_curr.y_;
+            double theta = s_curr.theta_;
+            double v = s_curr.v_;
+            double psi = s_curr.psi_;
             
             double acc = u[0];
             double steering_rate = u[1];
