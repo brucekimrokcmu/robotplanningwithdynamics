@@ -54,5 +54,9 @@ public:
     void setRegion(int id_, int region_id){
         nodes[id_].region = region_id;
     }  
+
+    void setControl(int id_, ControlSpace::VehicleControl control_){
+        nodes[id_].control = control_;
+    }
     
 };

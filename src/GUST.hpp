@@ -11,7 +11,7 @@
 
 class GUST{
 public: 
-    GUST(StateSpace& S, WorkSpace& W, const ControlSpace& M,  
+    GUST(StateSpace& S, WorkSpace& W, ControlSpace& M,  
         std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
         std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
         std::function<bool(StateSpace::VehicleState)> goal, Region goal_region)
@@ -22,7 +22,7 @@ private:
     // Input Parameters
     StateSpace& S; 
     WorkSpace& W; 
-    const ControlSpace& M;  
+    ControlSpace& M;  
     std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion; 
     std::function<bool(StateSpace::VehicleState)> valid;
     const StateSpace::VehicleState& s_init;

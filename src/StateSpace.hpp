@@ -35,7 +35,14 @@ public:
         double phi = (double)rand() / RAND_MAX * maxSteering;
         return VehicleState(x, y, theta, v, phi);
     };
-    // bool nearTarget(VehicleState s_new, VehicleState s_target);
+    bool nearTarget(VehicleState s_new, VehicleState s_target){
+        double x_diff = s_new.x_ - s_target.x_;
+        double y_diff = s_new.y_ - s_target.y_;
+        double theta_diff = s_new.theta_ - s_target.theta_;
+        double v_diff = s_new.v_ - s_target.v_;
+        double phi_diff = s_new.phi_ - s_target.phi_;
+        return (x_diff*x_diff + y_diff*y_diff + theta_diff*theta_diff + v_diff*v_diff + phi_diff*phi_diff) < 0.01;
+    }
     // bool goalState(VehicleState s_new);
     
 

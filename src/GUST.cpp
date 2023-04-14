@@ -12,6 +12,7 @@
 
 #define minNrSteps 500
 #define maxNrSteps 1500
+#define dt 1.0
 
 /**
 * Initialize the tree and the groups
@@ -137,106 +138,112 @@ MotionTree::Node GUST::SelectVertex(
 std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     MotionTree::Node v, StateSpace::VehicleState s_target) {
         //*****************Original (should be changed back) ****************
-    // std::vector<MotionTree::Node> new_vertices;
-    // VehicleControl u;
+    std::vector<MotionTree::Node> new_vertices;
+    ControlSpace::VehicleControl u;
 
     // // TODO: Implement random controller
-    // bool usePID = ((double) rand() / (RAND_MAX)) < 0.5;
-    // if (!usePID) {
-    //     u = RandomController();
-    // }
+    bool usePID = ((double) rand() / (RAND_MAX)) < smallProb;
+    if (!usePID) {
+        u = M.RandomController();
+    }
+    else{
+        u = M.PIDController(v.state, s_target, dt);
+    }
 
-    // int numIter = rand()%(maxNrSteps-minNrSteps + 1) + minNrSteps;
+    
 
+    int numIter = rand()%(maxNrSteps-minNrSteps + 1) + minNrSteps;
+    MotionTree::Node v_parent = v;
     // // TODO: Implement PID controller, Runge-Katta integration for motion,
-    // for (int k=1; k<numIter; k++) {
-    //     if (usePID) {
-    //         u = PIDController(v.state, s_target);
-    //     }
+    for (int k=1; k<numIter; k++) {
+        if (usePID) {
+            u = M.PIDController(v.state, s_target, dt);
+        }
 
     //     // TODO: implement motion function --> this should be passed in as an arg to the GUST constructor.
-    //     VehicleState s_new = motion(v.state, u, dt);
+        StateSpace::VehicleState s_new = motion(v.state, u, dt);
 
-    //     if (!StateSpace::validState(s_new)) {
-    //         return NULL;
-    //     }
-        
-    //     MotionTree::Node v_new = T.newVertex(s_new);
-    //     v_new.parent = v;
-    //     v_new.state = s_new;
-    //     v_new.control = u;
-
-    //     new_vertices.push_back(v_new);
-
-    //     if (StateSpace::goalState(s_new)) {
-    //         return std::pair(v_new, new_vertices);
-    //     }
-    //     if (StateSpace::nearTarget(s_new, s_target)) {
-    //         return NULL;
-    //     }
-
-    //     v = v_new;
-    // }
-    // return NULL;
-    // ******************* FOR TEST (without PIDController) ****************
-    std::vector<MotionTree::Node> new_vertices;
-    double delta_x = s_target.x_ - v.state.x_;
-    double delta_y = s_target.y_ - v.state.y_;
-    double dist = PointDistance(s_target.x_, s_target.y_, v.state.x_, v.state.y_);
-    if(dist < epsilon){
-        if(!valid(s_target)){
+        if (!valid(s_new)) {
             return std::make_pair(MotionTree::Node(), new_vertices);
         }
-        MotionTree::Node v_new = T.newVertex(s_target);
-        // if(v_new.id == 1){
-        //     std::cout << "child ID " << v_new.parent << std::endl;
-        //     std::cout << "child selfID " << v_new.id << std::endl;
-        // }
-        T.setParent(v_new.id, v.id);
-       
-        T.addChild(v.id, v_new.id);
-        new_vertices.push_back(T.getNode(v_new.id));
         
-        if(goal(s_target)){
-            return std::make_pair(T.getNode(v_new.id), new_vertices);
-        }
-        return std::make_pair(MotionTree::Node(), new_vertices);
-    }
-    double delta_x_norm = delta_x * epsilon / dist;
-    double delta_y_norm = delta_y * epsilon / dist;
-    MotionTree::Node v_parent = v;
-    while (delta_x_norm <= delta_x && delta_y_norm <= delta_y)
-    {   
-        StateSpace::VehicleState s_new ;
-        s_new.x_ = v.state.x_ + delta_x_norm;
-        s_new.y_ = v.state.y_ + delta_y_norm;
-        s_new.theta_ = v.state.theta_;
-        s_new.v_ = v.state.v_;
-        s_new.phi_= v.state.phi_;
-        
-        if(!valid(s_new)){
-            return std::make_pair(MotionTree::Node(), new_vertices);
-        }
         MotionTree::Node v_new = T.newVertex(s_new);
-        // printf("ID: %d\n", v_new.id);
-        // assert(v_parent.id != 0);
-        
         T.setParent(v_new.id, v_parent.id);
         T.setRegion(v_new.id, W.LocateRegion(s_new.x_, s_new.y_));
-        
         T.addChild(v_parent.id, v_new.id);
-        // Need control but now just leave it blank for test
+        T.setControl(v_new.id, u);
+        v_parent = v_new;
         new_vertices.push_back(T.getNode(v_new.id));
-        v_parent = T.getNode(v_new.id);
-        delta_x_norm += epsilon * delta_x / dist;
-        delta_y_norm += epsilon * delta_y / dist;
-        if(goal(s_new)){
+
+        if (goal(s_new)) {
             return std::make_pair(T.getNode(v_new.id), new_vertices);
         }
+        if (StateSpace::nearTarget(s_new, s_target)) {
+             return std::make_pair(MotionTree::Node(), new_vertices);
+        }
 
+    //     v = v_new;
     }
+    return std::make_pair(MotionTree::Node(), new_vertices);
+    // ******************* FOR TEST (without PIDController) ****************
+    // std::vector<MotionTree::Node> new_vertices;
+    // double delta_x = s_target.x_ - v.state.x_;
+    // double delta_y = s_target.y_ - v.state.y_;
+    // double dist = PointDistance(s_target.x_, s_target.y_, v.state.x_, v.state.y_);
+    // if(dist < epsilon){
+    //     if(!valid(s_target)){
+    //         return std::make_pair(MotionTree::Node(), new_vertices);
+    //     }
+    //     MotionTree::Node v_new = T.newVertex(s_target);
+    //     // if(v_new.id == 1){
+    //     //     std::cout << "child ID " << v_new.parent << std::endl;
+    //     //     std::cout << "child selfID " << v_new.id << std::endl;
+    //     // }
+    //     T.setParent(v_new.id, v.id);
+       
+    //     T.addChild(v.id, v_new.id);
+    //     new_vertices.push_back(T.getNode(v_new.id));
+        
+    //     if(goal(s_target)){
+    //         return std::make_pair(T.getNode(v_new.id), new_vertices);
+    //     }
+    //     return std::make_pair(MotionTree::Node(), new_vertices);
+    // }
+    // double delta_x_norm = delta_x * epsilon / dist;
+    // double delta_y_norm = delta_y * epsilon / dist;
+    // MotionTree::Node v_parent = v;
+    // while (delta_x_norm <= delta_x && delta_y_norm <= delta_y)
+    // {   
+    //     StateSpace::VehicleState s_new ;
+    //     s_new.x_ = v.state.x_ + delta_x_norm;
+    //     s_new.y_ = v.state.y_ + delta_y_norm;
+    //     s_new.theta_ = v.state.theta_;
+    //     s_new.v_ = v.state.v_;
+    //     s_new.phi_= v.state.phi_;
+        
+    //     if(!valid(s_new)){
+    //         return std::make_pair(MotionTree::Node(), new_vertices);
+    //     }
+    //     MotionTree::Node v_new = T.newVertex(s_new);
+    //     // printf("ID: %d\n", v_new.id);
+    //     // assert(v_parent.id != 0);
+        
+    //     T.setParent(v_new.id, v_parent.id);
+    //     T.setRegion(v_new.id, W.LocateRegion(s_new.x_, s_new.y_));
+        
+    //     T.addChild(v_parent.id, v_new.id);
+    //     // Need control but now just leave it blank for test
+    //     new_vertices.push_back(T.getNode(v_new.id));
+    //     v_parent = T.getNode(v_new.id);
+    //     delta_x_norm += epsilon * delta_x / dist;
+    //     delta_y_norm += epsilon * delta_y / dist;
+    //     if(goal(s_new)){
+    //         return std::make_pair(T.getNode(v_new.id), new_vertices);
+    //     }
+
+    // }
     
-    return make_pair(MotionTree::Node(), new_vertices);
+    // return make_pair(MotionTree::Node(), new_vertices);
 
 
 
