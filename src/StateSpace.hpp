@@ -14,19 +14,32 @@ public:
         double v_;     // velocity
         double phi_;   // steering angle
 
-        VehicleState(){}
-        VehicleState(double x, double y, double theta, double v, double phi) :
-        x_(x), y_(y), theta_(theta), v_(v), phi_(phi){}
+        VehicleState(){};
+        VehicleState(double x, double y, double theta, double v, double phi)
+            : x_(x),
+              y_(y),
+              theta_(theta),
+              v_(v),
+              phi_(phi)
+              {
+              };
     };
+
     StateSpace(double maxX, double maxY, double maxHeadingAngle, double maxSpeed, double maxSteering)
-        : maxX(maxX), maxY(maxY),maxHeadingAngle(maxHeadingAngle), maxSpeed(maxSpeed), maxSteering(maxSteering){};
+        :   maxX(maxX), 
+            maxY(maxY),
+            maxHeadingAngle(maxHeadingAngle), 
+            maxSpeed(maxSpeed), 
+            maxSteering(maxSteering)   
+        {
+        };
     
     /**
      * TODO: need change when implementing controller
      * @return random VehicleState
     */
-    VehicleState getRandomState(){
- 
+    VehicleState getRandomState()
+    {
         double x = (double)rand() / RAND_MAX * maxX;
         double y = (double)rand() / RAND_MAX * maxY;
         // printf("%f, %f\n", x, y);
@@ -35,7 +48,9 @@ public:
         double phi = (double)rand() / RAND_MAX * maxSteering;
         return VehicleState(x, y, theta, v, phi);
     };
-    bool nearTarget(VehicleState s_new, VehicleState s_target){
+
+    bool nearTarget(VehicleState s_new, VehicleState s_target)
+    {
         double x_diff = s_new.x_ - s_target.x_;
         double y_diff = s_new.y_ - s_target.y_;
         double theta_diff = s_new.theta_ - s_target.theta_;
