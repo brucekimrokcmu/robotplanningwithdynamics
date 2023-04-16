@@ -10,7 +10,7 @@ using namespace std;
 class Update
 {
     public:
-        Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle);
+        Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle): mlength_(length){};
         // Constructor that initializes the motion space with the given parameters
 
 

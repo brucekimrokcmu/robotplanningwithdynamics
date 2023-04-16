@@ -30,7 +30,7 @@ private:
     Region goal_region;
 
     // Constants
-    double time = 10000; // TODO: max time to sampling
+    double time = 60000; // TODO: max time to sampling
     double delta = 0.5; 
     double alpha = 8;
     double beta = 0.85;
@@ -97,6 +97,8 @@ private:
     */
     std::pair<double, double> Proj(StateSpace::VehicleState s);
     // int LocateRegion(double x, double y);
+
+    std::pair<int,std::vector<MotionTree::Node>> NewGroup(int r, MotionTree::Node v_new);
 
 
 };

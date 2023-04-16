@@ -192,7 +192,9 @@ box_body_1 = p.createMultiBody(
 
 # Run the simulation
 while(1):
-    p.setJointMotorControl2(car, 1, p.TORQUE_CONTROL, force=0.5)
+    # make car turn right
+    p.setJointMotorControl2(car, 0, p.VELOCITY_CONTROL, targetVelocity=2, force=100)   
+    # p.setJointMotorControl2(car, 1, p.TORQUE_CONTROL, force=0.5)
     # p.setJointMotorControl2(car, 4, p.VELOCITY_CONTROL, targetVelocity=0, force=100)
     # p.setJointMotorControl2(car, 6, p.VELOCITY_CONTROL, targetVelocity=, force=100)
     # p.setJointMotorControl2(car, 7, p.VELOCITY_CONTROL, targetVelocity=2, force=100)

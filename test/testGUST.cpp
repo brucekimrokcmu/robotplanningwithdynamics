@@ -1,4 +1,5 @@
 #include "../src/GUST.hpp"
+#include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files
@@ -24,14 +25,11 @@ int main(int argc, char** argv){
     // Initial state
     StateSpace::VehicleState s_init = StateSpace::VehicleState(0,0,0,0,0);
     // Making a control space (random we don't need this for now)
+    Update U = Update(1.5,0.5,1,1,0.7);
     ControlSpace C = ControlSpace();
     // motion function (we don't need this for now)
      std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)>
-         motion = [&](StateSpace::VehicleState s, ControlSpace::VehicleControl c, double dt){
-        StateSpace::VehicleState s_new;
-        // TODO: Implement this function
-        return s_new;
-    };
+         motion = [&](StateSpace::VehicleState v, ControlSpace::VehicleControl c, double t){return U.Motion(v,c,t);};
     
 
     // Goal region
@@ -50,6 +48,9 @@ int main(int argc, char** argv){
     std::function<bool(StateSpace::VehicleState)> valid = [&](StateSpace::VehicleState s){
        if(W2.Check_collision(s.x_, s.y_)){
            return false;
+       }
+       if(s.x_ < 0 || s.x_ > 20 || s.y_ < 0 || s.y_ > 20){
+              return false;
        }
        return true;
     };
@@ -110,9 +111,9 @@ int main(int argc, char** argv){
     for (size_t i = 0; i < result.size() ; i++) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
-            m_log_fstream << result[i].state.v_ << ","; 
-            m_log_fstream << result[i].state.theta_ << ","; 
-            m_log_fstream << result[i].state.phi_ << ","; 
+            // m_log_fstream << result[i].state.v_ << ","; 
+            // m_log_fstream << result[i].state.theta_ << ","; 
+            // m_log_fstream << result[i].state.phi_ << ","; 
             m_log_fstream << std::endl;
 	}
     m_log_fstream << std::endl;
