@@ -1,6 +1,10 @@
 import pybullet as p
 import time
+import pandas as pd
 import pybullet_data
+from utils import State
+from utils import read_plan_from_file
+
 physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
@@ -187,19 +191,31 @@ box_body_1 = p.createMultiBody(
 #                     baseCollisionShapeIndex=box_horizontal, 
 #                     basePosition=[2.4, -0.5, 0.2])
 
-
-
+# Read input from Planner:
+target_states = read_plan_from_file('testControl.txt')
 
 # Run the simulation
-while(1):
-    # make car turn right
-    p.setJointMotorControl2(car, 0, p.VELOCITY_CONTROL, targetVelocity=2, force=100)   
-    # p.setJointMotorControl2(car, 1, p.TORQUE_CONTROL, force=0.5)
-    # p.setJointMotorControl2(car, 4, p.VELOCITY_CONTROL, targetVelocity=0, force=100)
-    # p.setJointMotorControl2(car, 6, p.VELOCITY_CONTROL, targetVelocity=, force=100)
-    # p.setJointMotorControl2(car, 7, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
-    # p.setJointMotorControl2(car, 8, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
-    p.stepSimulation()
-    # time.sleep(1./240.)
-# Disconnect from the simulation environment
-p.disconnect()
+while(True):
+    for current_state in target_states:
+        for i in range (p.getNumJoints(car)):
+            jointInfo = p.getJointInfo(car, i)
+            jointName = jointInfo[1]
+
+            # Set steering angle
+            if "bar_joint" in jointName.decode("utf-8"):
+                p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
+            
+            # Set velocity
+            if "wheel_joint" in jointName.decode("utf-8"):
+                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=current_state.velocity, force=100)
+
+            # Don't think we can Set orientation
+            #if "base_scan_joint" in jointName.decode("utf-8"):
+                #if "steer_joint" in jointName.decode("utf-8"):
+            #    p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.orientation)
+
+            p.stepSimulation()
+        #time.sleep(.5)
+
+    # Disconnect from the simulation environment
+    p.disconnect()
