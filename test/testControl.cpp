@@ -15,7 +15,7 @@ int main(){
     StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
     states.push_back(s_curr);
     int count = 0;
-    while(count < 9){
+    while(count < 3){
         StateSpace::VehicleState s_new = up.Motion(s_curr, randomControl, 1);
         states.push_back(s_new);
         s_curr = s_new;

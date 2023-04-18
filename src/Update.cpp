@@ -53,7 +53,7 @@ class Update
             s_temp.y_ = s_curr.y_ + 0.5 * dt * f1.y_;
             s_temp.theta_ = s_curr.theta_ + 0.5 * dt * f1.theta_;
             s_temp.v_ = s_curr.v_ + 0.5 * dt * f1.v_;
-            s_temp.phi_ = s_curr.phi_ + 0.5 * dt * f1.v_;
+            s_temp.phi_ = s_curr.phi_ + 0.5 * dt * f1.phi_;
 
             StateSpace::VehicleState f2 = Dynamics(s_temp, u, dt);
 
