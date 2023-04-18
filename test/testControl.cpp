@@ -3,7 +3,7 @@
 #include <fstream> // For reading/writing files
 #include <string>
 #include "../src/ControlSpace.hpp"
-#include "../src/Update.hpp"
+#include "../src/Update.cpp"
 
 int main(){
     ControlSpace cs = ControlSpace();
@@ -24,15 +24,15 @@ int main(){
    
 
     // Test PID controller
-    s_curr = StateSpace::VehicleState(0.0, 0.0, 0.0, 1.0, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(100.0, 5.0, 0.0, 1.0, 0.0);
+    s_curr = StateSpace::VehicleState(5.0, 0.0, 0.0, 1, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(5, 15.0, 0.0, 1, 1.57);
     ControlSpace::VehicleControl pidControl = cs.PIDController(s_curr,s_target);
-    
-    StateSpace::VehicleState s_new;
+    std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
+    StateSpace::VehicleState s_new; // = up.Motion(s_curr, pidControl, 1);
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
     count = 0;
-    while(count < 10000){
+    while(count < 9){
         s_new = up.Motion(s_curr, pidControl, 1);
         pidstates.push_back(s_new);
         s_curr = s_new;
@@ -57,12 +57,13 @@ int main(){
         double theta = pidstates[i].theta_;
         double speed = pidstates[i].v_;
         double phi = pidstates[i].phi_;
-            m_log_fstream << x << ",";
-            m_log_fstream << y << ",";
-            m_log_fstream << theta << ",";
-            m_log_fstream << speed << ",";
-            m_log_fstream << phi << ",";
-            
+        m_log_fstream << x << ",";
+        m_log_fstream << y << ",";
+        m_log_fstream << theta << ",";
+        m_log_fstream << speed << ",";
+        m_log_fstream << phi;
+        
+        if (i < pidstates.size()-1)
             m_log_fstream << std::endl;
     }
 
