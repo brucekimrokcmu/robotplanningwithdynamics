@@ -33,9 +33,7 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
     double D_steering = Kd_steering * (error_steering - prev_error_steering);
     
 
-    u_acc = P_acc + I_acc + D_acc;
-    
-    
+    u_acc = P_acc + I_acc + D_acc;   
     u_steering_rate = P_steering + I_steering + D_steering;
 
     // Update previous errors
