@@ -1,5 +1,5 @@
 #include "../src/GUST.hpp"
-#include "../src/Update.hpp"
+#include "../src/Update.cpp"
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files

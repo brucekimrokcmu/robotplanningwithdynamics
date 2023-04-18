@@ -152,7 +152,7 @@ class Update
 
     private:
         // const double maxTime = 100;
-        // double mlength_;         // Length of the vehicle
+        double mlength_;         // Length of the vehicle
         // double width_;          // Width of the vehicle
         // double maxSpeed_;       // Maximum speed of the vehicle
         // double maxAcceleration_;// Maximum acceleration of the vehicle

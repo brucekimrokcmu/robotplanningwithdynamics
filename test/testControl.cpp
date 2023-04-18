@@ -25,7 +25,7 @@ int main(){
 
     // Test PID controller
     s_curr = StateSpace::VehicleState(0.0, 0.0, 0.0, 1, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(15, 15.0, 0.0, 1, 1.57);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(15, 0.0, 0.0, 1, 0);
     ControlSpace::VehicleControl pidControl = cs.PIDController(s_curr,s_target);
     std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
     StateSpace::VehicleState s_new; // = up.Motion(s_curr, pidControl, 1);
@@ -51,12 +51,12 @@ int main(){
 		throw std::runtime_error("Cannot open file");
 	}
 	/// Then write out all the joint angles in the plan sequentially
-    for(size_t i = 0; i < pidstates.size(); i++){
-        double x =  pidstates[i].x_;
-        double y =  pidstates[i].y_;
-        double theta = pidstates[i].theta_;
-        double speed = pidstates[i].v_;
-        double phi = pidstates[i].phi_;
+    for(size_t i = 0; i < states.size(); i++){
+        double x =  states[i].x_;
+        double y =  states[i].y_;
+        double theta = states[i].theta_;
+        double speed = states[i].v_;
+        double phi = states[i].phi_;
         m_log_fstream << x << ",";
         m_log_fstream << y << ",";
         m_log_fstream << theta << ",";

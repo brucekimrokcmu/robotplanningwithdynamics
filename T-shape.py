@@ -195,20 +195,6 @@ box_body_1 = p.createMultiBody(
 target_states = read_plan_from_file('testControl.txt')
 
 # Run the simulation
-<<<<<<< HEAD
-while(1):
-    # make car turn right
-    # p.setJointMotorControl2(car, 0, p.VELOCITY_CONTROL, targetVelocity=2, force=100)   
-    # p.setJointMotorControl2(car, 1, p.TORQUE_CONTROL, force=0.5)
-    # p.setJointMotorControl2(car, 4, p.VELOCITY_CONTROL, targetVelocity=0, force=100)
-    # p.setJointMotorControl2(car, 6, p.VELOCITY_CONTROL, targetVelocity=, force=100)
-    # p.setJointMotorControl2(car, 7, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
-    # p.setJointMotorControl2(car, 8, p.VELOCITY_CONTROL, targetVelocity=2, force=100)
-    p.stepSimulation()
-    # time.sleep(1./240.)
-# Disconnect from the simulation environment
-p.disconnect()
-=======
 while(True):
     for current_state in target_states:
         for i in range (p.getNumJoints(car)):
@@ -233,4 +219,3 @@ while(True):
 
     # Disconnect from the simulation environment
     p.disconnect()
->>>>>>> cf764d88b13abb7676749ee0ef7024a631c69174
