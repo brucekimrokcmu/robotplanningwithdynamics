@@ -55,12 +55,13 @@ int main(){
         double theta = pidstates[i].theta_;
         double speed = pidstates[i].v_;
         double phi = pidstates[i].phi_;
-            m_log_fstream << x << ",";
-            m_log_fstream << y << ",";
-            m_log_fstream << theta << ",";
-            m_log_fstream << speed << ",";
-            m_log_fstream << phi << ",";
-            
+        m_log_fstream << x << ",";
+        m_log_fstream << y << ",";
+        m_log_fstream << theta << ",";
+        m_log_fstream << speed << ",";
+        m_log_fstream << phi;
+        
+        if (i < pidstates.size()-1)
             m_log_fstream << std::endl;
     }
 
