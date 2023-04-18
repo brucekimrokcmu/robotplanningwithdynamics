@@ -24,15 +24,15 @@ int main(){
    
 
     // Test PID controller
-    s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(10, 2.0, 1.57, 0.5, 0.0);
+    s_curr = StateSpace::VehicleState(5.0, 0.0, 0.0, 1, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(10, 15.0, 0.0, 1, 1.57);
     ControlSpace::VehicleControl pidControl = cs.PIDController(s_curr,s_target);
     std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
-    StateSpace::VehicleState s_new = up.Motion(s_curr, pidControl, 1);
+    StateSpace::VehicleState s_new; // = up.Motion(s_curr, pidControl, 1);
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
     count = 0;
-    while(count < 10){
+    while(count < 9){
         s_new = up.Motion(s_curr, pidControl, 1);
         pidstates.push_back(s_new);
         s_curr = s_new;
