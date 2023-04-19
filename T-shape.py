@@ -1,198 +1,79 @@
 import pybullet as p
 import time
-import pandas as pd
 import pybullet_data
-from utils import State
-from utils import read_plan_from_file
+import utils
 
-physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
+# Example usage: 
+# python T-shape.py -p testControl.txt -o obstacles.txt -c test/dummy.cpp
+
+planner_path_fpath, obstacles_fpath, cpp_fpath = utils.get_file_paths()
+
+physicsClient = p.connect(p.GUI) #or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
 
 planeId = p.loadURDF("plane.urdf")
-# Create a floor and walls
-# floor = p.createCollisionShape(p.GEOM_PLANE)
-# walls = p.createCollisionShape(p.GEOM_BOX, halfExtents=[2, 2, 0.1])
-# p.createMultiBody(baseCollisionShapeIndex=walls, basePosition=[0, 0, 0.5])
 
 # Drop car into environment
 startPos = [0,0,0.5]
 startOrientation = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
+obstacles = []
+
 # Create a box object
-# startPos = [0,0,1]
 startOrientation = p.getQuaternionFromEuler([0,0,0])
-# Middle Right Line
-box = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.1, 1.5, 0.2])
-box_body_1 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box, 
-                    basePosition=[-1, -2, 0.2])
 
+# (basePosition, baseCollisionShapeIndex, extents)
+box_extents = [0.1, 1.5, 0.2]
+box1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box_extents)
+box_curve_extents = [0.1, 0.1, 0.2]
+box_curve1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box_curve_extents)
+box2_extents = [1.5, 0.1, 0.2]
+box2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box2_extents)
+box3_extents = [4.2, 0.1, 0.2]
+box3 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box3_extents)
 
-# Middle Left Line
-box_body_1 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box, 
-                    basePosition=[1, -2, 0.2])
+t_shape_configs = [
+    ([-1, -2, 0.2], box1, box_extents), # Middle Right Line
+    ([1, -2, 0.2], box1, box_extents), # Middle Left Line
+    ([1.1, -0.4, 0.2], box_curve1, box_curve_extents), # Right down curve
+    ([1.2, -0.2, 0.2], box_curve1, box_curve_extents),
+    ([1.3, 0.0, 0.2], box_curve1, box_curve_extents),
+    ([1.4, 0.2, 0.2], box_curve1, box_curve_extents),
+    ([-1.1, -0.4, 0.2], box_curve1, box_curve_extents), # Left Down Curve
+    ([-1.2, -0.2, 0.2], box_curve1, box_curve_extents),
+    ([-1.3, 0.0, 0.2], box_curve1, box_curve_extents),
+    ([-1.4, 0.2, 0.2], box_curve1, box_curve_extents),
+    ([3.0, 0.2, 0.2], box2, box2_extents), # Up right Line
+    ([-3.0, 0.2, 0.2], box2, box2_extents), # Middle Left Line
+    ([0, 1.5, 0.2], box3, box3_extents)
+]
 
-# Right down curve
-box_curve1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0.1, 0.1, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[1.1, -0.4, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[1.2, -0.2, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[1.3, 0.0, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[1.4, 0.2, 0.2])
+for basePosition, baseCollisionShapeIndex, extents in t_shape_configs:
+    box = p.createMultiBody(
+                baseMass=1,
+                baseInertialFramePosition=[0, 0, 0],
+                baseCollisionShapeIndex=baseCollisionShapeIndex, 
+                basePosition=basePosition)
+    obstacles.append((box, box_extents))
 
-# Left Down Curve
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[-1.1, -0.4, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[-1.2, -0.2, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[-1.3, 0.0, 0.2])
-box_body_2 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box_curve1, 
-                    basePosition=[-1.4, 0.2, 0.2])
+# Port all of the obstacles into a txt file with their coordinates
+obstacle_extents_arr = []
+for obstacle, extents in obstacles:
+    position, orientation = p.getBasePositionAndOrientation(obstacle)
+    obstacle_extents_arr.append((position, extents))
+utils.create_obstacles_txt_file(obstacle_extents_arr, obstacles_fpath)
 
-box2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=[1.5, 0.1, 0.2])
-# Up right Line
-box_body_1 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box2, 
-                    basePosition=[3.0, 0.2, 0.2])
-
-
-# Middle Left Line
-box_body_1 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box2, 
-                    basePosition=[-3.0, 0.2, 0.2])
-
-box3 = p.createCollisionShape(p.GEOM_BOX, halfExtents=[4.2, 0.1, 0.2])
-box_body_1 = p.createMultiBody(
-                    baseMass=1,
-                    baseInertialFramePosition=[0, 0, 0],
-                    baseCollisionShapeIndex=box3, 
-                    basePosition=[0, 1.5, 0.2])
-
-
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[0.4, 2.2, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[0.2, 2.3, 0.2])
-
-# # Left Right Curve
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[-0.2, 1, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[-0.4, 1.1, 0.2])
-
-# # Up Left and Right Straight Lines
-# box_horizontal = p.createCollisionShape(p.GEOM_BOX, halfExtents=[1, 0.1, 0.2])
-# box_body_1 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_horizontal, 
-#                     basePosition=[-1.5, 1.1, 0.2])
-# box_body_1 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_horizontal, 
-#                     basePosition=[-0.9, 2.3, 0.2])
-# # Right down curve
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[1.1, -0.1, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[1.2, -0.3, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[1.3, -0.5, 0.2])
-
-# # Left down curve
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[0.1, -1.1, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[0.2, -1.3, 0.2])
-# box_body_2 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_curve1, 
-#                     basePosition=[0.3, -1.5, 0.2])
-
-# # Down Left and Right Straight Lines
-# box_horizontal = p.createCollisionShape(p.GEOM_BOX, halfExtents=[1, 0.1, 0.2])
-# box_horizontal_add = p.createCollisionShape(p.GEOM_BOX, halfExtents=[1.5, 0.1, 0.2])
-# box_body_1 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_horizontal_add, 
-#                     basePosition=[1.9, -1.5, 0.2])
-# box_body_1 = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=box_horizontal, 
-#                     basePosition=[2.4, -0.5, 0.2])
+# TODO: execute planner here
+# if os.system("g++ " + cpp_fpath) == 0:
+#     print("Executed planner")
+# else:
+#     print('Could not execute planner ' + cpp_fpath)
+#     #Exception('Could not execute planner ' + cpp_fpath)
 
 # Read input from Planner:
-target_states = read_plan_from_file('testControl.txt')
+target_states = utils.read_plan_from_file(planner_path_fpath)
 
 # Run the simulation
 while(True):
