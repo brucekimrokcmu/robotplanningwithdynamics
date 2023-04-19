@@ -8,14 +8,15 @@
 int main(){
     ControlSpace cs = ControlSpace();
     // Test random controller
-    ControlSpace::VehicleControl randomControl = cs.RandomController(); 
+    // ControlSpace::VehicleControl randomControl = cs.RandomController(); 
+    ControlSpace::VehicleControl randomControl = {0.2,0.01}; 
     std::cout << "Random control: " << randomControl.acc << ", " << randomControl.steering_rate << std::endl;
     std::vector<StateSpace::VehicleState > states;
     Update up = Update(1.0, 0.5, 1.0, 1.0, 0.785);
     StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
     states.push_back(s_curr);
     int count = 0;
-    while(count < 3){
+    while(count < 10){
         StateSpace::VehicleState s_new = up.Motion(s_curr, randomControl, 1);
         states.push_back(s_new);
         s_curr = s_new;
