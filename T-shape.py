@@ -2,19 +2,14 @@ import pybullet as p
 import time
 import pybullet_data
 import utils
-import os
 
 planner_path_fpath, obstacles_fpath, cpp_fpath = utils.get_file_paths()
 
-physicsClient = p.connect(p.GUI)#or p.DIRECT for non-graphical version
+physicsClient = p.connect(p.GUI) #or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
 
 planeId = p.loadURDF("plane.urdf")
-# Create a floor and walls
-# floor = p.createCollisionShape(p.GEOM_PLANE)
-# walls = p.createCollisionShape(p.GEOM_BOX, halfExtents=[2, 2, 0.1])
-# p.createMultiBody(baseCollisionShapeIndex=walls, basePosition=[0, 0, 0.5])
 
 # Drop car into environment
 startPos = [0,0,0.5]
