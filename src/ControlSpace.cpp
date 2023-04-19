@@ -52,7 +52,7 @@ ControlSpace::VehicleControl ControlSpace::RandomController()
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> rand_acc(0.1, 1);                                  // m/s^2
-    std::uniform_real_distribution<> rand_steering_rate(-PI/6, PI/6);                   // -30deg ~ 30 deg
+    std::uniform_real_distribution<> rand_steering_rate(-0.02, 0.02);                   // -30deg ~ 30 deg
 
     double rand_u_acc = rand_acc(gen);
     double rand_u_steering_rate = rand_steering_rate(gen);
