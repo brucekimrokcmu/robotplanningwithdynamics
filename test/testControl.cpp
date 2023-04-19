@@ -7,34 +7,40 @@
 
 int main(){
     ControlSpace cs = ControlSpace();
-    // Test random controller
-    ControlSpace::VehicleControl randomControl = cs.RandomController(); 
-    std::cout << "Random control: " << randomControl.acc << ", " << randomControl.steering_rate << std::endl;
-    std::vector<StateSpace::VehicleState > states;
-    Update up = Update(1.0, 0.5, 1.0, 1.0, 0.785);
-    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
-    states.push_back(s_curr);
-    int count = 0;
-    while(count < 10){
-        StateSpace::VehicleState s_new = up.Motion(s_curr, randomControl, 1);
-        states.push_back(s_new);
-        s_curr = s_new;
-        count++;
-    }
+    // // Test random controller
+    // ControlSpace::VehicleControl randomControl = cs.RandomController(); 
+    // std::cout << "Random control: " << randomControl.acc << ", " << randomControl.steering_rate << std::endl;
+    // std::vector<StateSpace::VehicleState > states;
+    // Update up = Update(1.0, 0.5, 1.0, 1.0, 0.785);
+    // StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
+    // states.push_back(s_curr);
+    // int count = 0;
+    // while(count < 10){
+    //     StateSpace::VehicleState s_new = up.Motion(s_curr, randomControl, 1);
+    //     states.push_back(s_new);
+    //     s_curr = s_new;
+    //     count++;
+    // }
    
 
     // Test PID controller
-    s_curr = StateSpace::VehicleState(5.0, 0.0, 0.0, 1, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(10, 15.0, 0.0, 1, 1.57);
-    ControlSpace::VehicleControl pidControl = cs.PIDController(s_curr,s_target);
-    std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
-    StateSpace::VehicleState s_new; // = up.Motion(s_curr, pidControl, 1);
+    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 0.0, 0.0, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(25.0, 0.0, 0.0, 0.5, 0.0);
+    ControlSpace::VehicleControl pidControl;
+    Update up;
+    StateSpace::VehicleState s_new;
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
-    count = 0;
-    while(count < 9){
+    int count = 0;
+    while(count < 50){
+        pidControl = cs.PIDController(s_curr,s_target);
+        std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
         s_new = up.Motion(s_curr, pidControl, 1);
         pidstates.push_back(s_new);
+        
+        if (std::sqrt(std::pow(s_target.x_-s_curr.x_, 2) + std::pow(s_target.y_-s_curr.y_, 2))<0.5) {
+            break;
+        }
         s_curr = s_new;
         count++;
     }
@@ -42,7 +48,7 @@ int main(){
 
 
     // Output file
-    std::string outputFile = "testControl.txt";
+    std::string outputFile = "testPIDControl.txt";
 	std::ofstream m_log_fstream;
 	m_log_fstream.open(outputFile, std::ios::trunc); // Creates new or replaces existing file
 	if (!m_log_fstream.is_open()) {

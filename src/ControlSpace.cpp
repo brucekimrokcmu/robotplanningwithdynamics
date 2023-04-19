@@ -6,12 +6,12 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
 {
     double u_acc, u_steering_rate;
     // P, I, D controls
-    const double Kp_acc = 10.0;
-    const double Ki_acc = 0.1;
-    const double Kd_acc = 0.1;
-    const double Kp_steering = 10.0;
-    const double Ki_steering = 0.1;
-    const double Kd_steering = 0.1;
+    const double Kp_acc = 1.0;
+    const double Ki_acc = 0.3;
+    const double Kd_acc = 0.3;
+    const double Kp_steering = 0.0;
+    const double Ki_steering = 0.0;
+    const double Kd_steering = 0.0;
 
     // Define PID errors
     double error_acc = s_target.v_ - s_current.v_;
