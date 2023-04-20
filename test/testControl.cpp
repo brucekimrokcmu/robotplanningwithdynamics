@@ -3,7 +3,7 @@
 #include <fstream> // For reading/writing files
 #include <string>
 #include "../src/ControlSpace.hpp"
-#include "../src/Update.cpp"
+#include "../src/Update.hpp"
 
 int main(){
     ControlSpace cs = ControlSpace();
@@ -25,13 +25,13 @@ int main(){
 
     // Test PID controller
     StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(100., 100., 0.78, 1.0, -0.1);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(3., 3., 1.00, 0.5, -0.03);
     ControlSpace::VehicleControl pidControl;
     Update up;
     StateSpace::VehicleState s_new;
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
-    const int numIter = 500;
+    const int numIter = 10;
     int count = 0;
     while(count < numIter){
         pidControl = cs.PIDController(s_curr,s_target);
@@ -39,7 +39,7 @@ int main(){
         s_new = up.Motion(s_curr, pidControl, 1);
         pidstates.push_back(s_new);
         
-        if (std::sqrt(std::pow(s_target.x_-s_curr.x_, 2) + std::pow(s_target.y_-s_curr.y_, 2))<0.5) {
+        if (std::sqrt(std::pow(s_target.x_-s_curr.x_, 2) + std::pow(s_target.y_-s_curr.y_, 2)) < 0.5) {
             break;
         }
         s_curr = s_new;
@@ -60,12 +60,12 @@ int main(){
 		throw std::runtime_error("Cannot open file");
 	}
 	/// Then write out all the joint angles in the plan sequentially
-    for(size_t i = 0; i < states.size(); i++){
-        double x =  states[i].x_;
-        double y =  states[i].y_;
-        double theta = states[i].theta_;
-        double speed = states[i].v_;
-        double phi = states[i].phi_;
+    for(size_t i = 0; i < pidstates.size(); i++){
+        double x =  pidstates[i].x_;
+        double y =  pidstates[i].y_;
+        double theta = pidstates[i].theta_;
+        double speed = pidstates[i].v_;
+        double phi = pidstates[i].phi_;
         m_log_fstream << x << ",";
         m_log_fstream << y << ",";
         m_log_fstream << theta << ",";
