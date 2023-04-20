@@ -45,7 +45,8 @@ public:
         // printf("%f, %f\n", x, y);
         double theta = (double)rand() / RAND_MAX * maxHeadingAngle;
         double v = (double)rand() / RAND_MAX * maxSpeed;
-        double phi = (double)rand() / RAND_MAX * maxSteering;
+        bool isNegative = rand() % 2;
+        double phi = isNegative ? -(double)rand() / RAND_MAX * maxSteering : (double)rand() / RAND_MAX * maxSteering;
         return VehicleState(x, y, theta, v, phi);
     };
 
@@ -56,7 +57,7 @@ public:
         double theta_diff = s_new.theta_ - s_target.theta_;
         double v_diff = s_new.v_ - s_target.v_;
         double phi_diff = s_new.phi_ - s_target.phi_;
-        return (x_diff*x_diff + y_diff*y_diff + theta_diff*theta_diff + v_diff*v_diff + phi_diff*phi_diff) < 0.01;
+        return (x_diff*x_diff + y_diff*y_diff ) < 0.01;
     }
     // bool goalState(VehicleState s_new);
     
