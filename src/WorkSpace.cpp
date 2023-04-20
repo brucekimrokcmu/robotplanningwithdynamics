@@ -15,9 +15,10 @@ void WorkSpace::setSplitted(int id){
  * Add a new region to `regions`, and set id as `regions.size()`.
  * @param r : region
 */
-void WorkSpace::addRegion(Region r){
+int WorkSpace::addRegion(Region r){
     r.id = (int)regions.size();
     regions.push_back(r);
+    return r.id;
 }
 
 /**

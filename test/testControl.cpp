@@ -3,7 +3,7 @@
 #include <fstream> // For reading/writing files
 #include <string>
 #include "../src/ControlSpace.hpp"
-#include "../src/Update.hpp"
+#include "../src/Update.cpp"
 
 int main(){
     ControlSpace cs = ControlSpace();
@@ -43,6 +43,8 @@ int main(){
             break;
         }
         s_curr = s_new;
+        pidControl = cs.PIDController(s_curr,s_target);
+        std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
         count++;
     }
     if (count == numIter) {
@@ -58,12 +60,12 @@ int main(){
 		throw std::runtime_error("Cannot open file");
 	}
 	/// Then write out all the joint angles in the plan sequentially
-    for(size_t i = 0; i < pidstates.size(); i++){
-        double x =  pidstates[i].x_;
-        double y =  pidstates[i].y_;
-        double theta = pidstates[i].theta_;
-        double speed = pidstates[i].v_;
-        double phi = pidstates[i].phi_;
+    for(size_t i = 0; i < states.size(); i++){
+        double x =  states[i].x_;
+        double y =  states[i].y_;
+        double theta = states[i].theta_;
+        double speed = states[i].v_;
+        double phi = states[i].phi_;
         m_log_fstream << x << ",";
         m_log_fstream << y << ",";
         m_log_fstream << theta << ",";
