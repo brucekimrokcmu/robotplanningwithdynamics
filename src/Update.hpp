@@ -1,6 +1,7 @@
+#pragma once
 #include <cmath>
 #include <vector>
-#include "Update.hpp"
+
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
 
@@ -10,12 +11,19 @@ class Update
 {
     public:
         
+        struct VehicleGeometry 
+        {
+            const double length = 0.3; // check URDF
+
+        } VehicleGeometry;
+
+
         Update(){};
         Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle) {};
 
-        StateSpace::VehicleState Update::Dynamics(StateSpace::VehicleState s_curr, ControlSpace::VehicleControl u, double dt)
+        StateSpace::VehicleState Dynamics(StateSpace::VehicleState s_curr, ControlSpace::VehicleControl u, double dt)
         {
-         
+            
             double x = s_curr.x_;
             double y = s_curr.y_;
             double theta = s_curr.theta_;
@@ -34,9 +42,9 @@ class Update
             StateSpace::VehicleState s_dot = {x_dot, y_dot, theta_dot, v_dot, psi_dot}; // Dynamics         
 
             return s_dot;
-        }
+        };
 
-        StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt) 
+        StateSpace::VehicleState Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt) 
         {
             //Using Explicit Midpoint
             StateSpace::VehicleState s_temp, s_new;
@@ -58,8 +66,7 @@ class Update
 
             return s_new;
 
-        }
-
+        };
 
         // function normalized_rk4_step(xk,uk)
             
@@ -141,7 +148,7 @@ class Update
 
     private:
         // const double maxTime = 100;
-        double mlength_;         // Length of the vehicle
+        // double mlength_;         // Length of the vehicle
         // double width_;          // Width of the vehicle
         // double maxSpeed_;       // Maximum speed of the vehicle
         // double maxAcceleration_;// Maximum acceleration of the vehicle
