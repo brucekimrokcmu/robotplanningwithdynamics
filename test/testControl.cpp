@@ -24,15 +24,16 @@ int main(){
    
 
     // Test PID controller
-    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 0.0, 0.0, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(25.0, 0.0, 0.0, 0.5, 0.0);
+    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(100., 100., 0.78, 1.0, -0.1);
     ControlSpace::VehicleControl pidControl;
     Update up;
     StateSpace::VehicleState s_new;
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
+    const int numIter = 500;
     int count = 0;
-    while(count < 50){
+    while(count < numIter){
         pidControl = cs.PIDController(s_curr,s_target);
         std::cout << "PID control: " << pidControl.acc << ", " << pidControl.steering_rate << std::endl;
         s_new = up.Motion(s_curr, pidControl, 1);
@@ -44,7 +45,9 @@ int main(){
         s_curr = s_new;
         count++;
     }
-
+    if (count == numIter) {
+        std::cout<< "No solution!" <<std::endl;
+    }
 
 
     // Output file
