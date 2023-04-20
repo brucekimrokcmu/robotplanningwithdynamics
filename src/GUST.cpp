@@ -12,7 +12,7 @@
 #include "MotionTree.hpp"
 
 #define minNrSteps 1
-#define maxNrSteps 5
+#define maxNrSteps 2
 #define dt 1.0
 
 /**
@@ -28,12 +28,16 @@ void GUST::InitTreeAndGroups(){
 }
 std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
     // Select a group Lambda_r
+    // printf("Selecting group");
     int index = -1;
     double max_weight = 0.0;
     for(auto it = Lambda.begin(); it != Lambda.end(); it++){
         double h_norm = (W.h_max - W.GetRegion(it->first).h_value)/W.h_max;
         h_norm = delta + ( 1-delta)*h_norm;
         double weight = std::pow(h_norm, alpha) * std::pow(beta, W.GetRegion(it->first).nsel);
+        // std::cout <<  std::pow(h_norm, alpha) << std::endl;
+        // std::cout << std::pow(beta, W.GetRegion(it->first).nsel) << std::endl;
+        // std::cout << "Weight: " << weight << std::endl;
         if(max_weight < weight){
             // printf("Smallers");
             max_weight = weight;
@@ -41,12 +45,12 @@ std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
         }
     }
     if(index == -1){
-        printf("Error: No group selected");
-        std::cout << "Lambda size: " << Lambda.size() << std::endl;
-        std::cout << "Max weight: " << max_weight << std::endl;
-        std::cout << "Index: " << Lambda[0].size() << std::endl;
-        std::cout << max_weight << std::endl;   
-        return std::make_pair(Lambda[0], 0);
+        // printf("Error: No group selected");
+        // std::cout << "Lambda size: " << Lambda.size() << std::endl;
+        // std::cout << "Max weight: " << max_weight << std::endl;
+        // std::cout << "Index: " << Lambda.begin()->second.size() << std::endl;
+        // std::cout << max_weight << std::endl;   
+        return std::make_pair(Lambda.begin()->second, Lambda.begin()->first);
     }else{
         W.addSel(index);
     // std::cout << "Selected region: " << index << std::endl;
@@ -80,6 +84,21 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     if(random_double < smallProb){
         s_target = S.getRandomState();
         // TODO: sample a state in the regions along the shortest path to goal
+        Region targetRegion = W.GetRegion(r);
+        std::vector<int> neighbors = targetRegion.neighbors;
+        int minH =  W.GetRegion(neighbors[0]).h_value;
+        int idx = 0;
+        for(int i = 0; i < neighbors.size(); i++){
+            Region neighbor = W.GetRegion(neighbors[i]);
+            if(neighbor.h_value < minH){
+                idx = i;
+                minH = neighbor.h_value;
+            }
+        }
+        Region minHRegion = W.GetRegion(neighbors[idx]);
+        s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
+        s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
+
     }else{
         s_target = S.getRandomState();
     }
@@ -155,7 +174,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
 
     // // TODO: Implement random controller
     bool usePID = ((double) rand() / (RAND_MAX)) < smallProb;
-    usePID = false;
+    usePID = false; // ! Delete when integrating PID controller
     
     ;
     if (!usePID) {
@@ -307,7 +326,7 @@ MotionTree::Node GUST::GroupPlanner(
             // Add r_new_new to Lambda
             Lambda.insert(
                 make_pair(
-                    r_new_new, vertex_list
+                    r_new_new, std::vector<MotionTree::Node>{v_new}
                 )
             );
         }
@@ -391,7 +410,8 @@ std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNo
             printf("wrong\n");
         }
         MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
-        assert(Lambda.size() != 0);
+        // std::cout << Lambda.size() << std::endl;
+        // std::cout << Lambda.begin()->second.size() << std::endl;
         // printf("Out GroupPlanner\n");
         if(v_last.id != -1){
             printf("finish\n");
