@@ -1,5 +1,5 @@
 #include "../src/GUST.hpp"
-#include "../src/Update.cpp"
+#include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files
@@ -27,7 +27,7 @@ int main(int argc, char** argv){
     W2.addObstacle(o7);
 
     // Making a state space
-    StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/2);
+    StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/6);
     // Initial state
     StateSpace::VehicleState s_init = StateSpace::VehicleState(0,0,0,0,0);
     // Making a control space (random we don't need this for now)
