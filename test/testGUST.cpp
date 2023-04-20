@@ -1,5 +1,5 @@
 #include "../src/GUST.hpp"
-#include "../src/Update.cpp"
+#include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files
@@ -20,7 +20,7 @@ int main(int argc, char** argv){
     Obstacle o7 = Obstacle(10,17.5,1,1);
     W2.addObstacle(o1);
     W2.addObstacle(o2);
-     W2.addObstacle(o3);
+    W2.addObstacle(o3);
     W2.addObstacle(o4);
     W2.addObstacle(o5);
     W2.addObstacle(o6);
@@ -84,8 +84,9 @@ int main(int argc, char** argv){
 		throw std::runtime_error("Cannot open file");
 	}
 	m_log_fstream << argv[1] << std::endl; // Write out map name first
+    m_log_fstream << std::endl;
 
-	/// Then write out all the joint angles in the plan sequentially
+	// Then write out obstacle boundaries
     for(size_t i = 0; i < W2.countObstacleSize(); i++){
         double x =  W2.GetObstacle(i).x - W2.GetObstacle(i).x_extent;
         double y =  W2.GetObstacle(i).y - W2.GetObstacle(i).y_extent;
@@ -94,11 +95,13 @@ int main(int argc, char** argv){
             m_log_fstream << x << ",";
             m_log_fstream << y << ",";
             m_log_fstream << x_extent << ",";
-            m_log_fstream << y_extent << ",";
+            m_log_fstream << y_extent;
             
             m_log_fstream << std::endl;
     }
     m_log_fstream << std::endl;
+
+    // Region decomposition from GUST algorithm
 	for (size_t i = 0; i < W2.countRegionSize() ; i++) {
 		
         if(!W2.GetRegion(i).splitted){
@@ -106,27 +109,29 @@ int main(int argc, char** argv){
             m_log_fstream << W2.GetRegion(i).x_extent << ",";
             m_log_fstream << W2.GetRegion(i).y_start << ",";
             m_log_fstream << W2.GetRegion(i).y_extent << ",";
-            m_log_fstream << W2.GetRegion(i).h_value << ",";
+            m_log_fstream << W2.GetRegion(i).h_value;
             
             m_log_fstream << std::endl;
-
         }
 		
 	}
     m_log_fstream << std::endl;
+
+    // States for each step of the plan
     for (size_t i = 0; i < result.size() ; i++) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
-            // m_log_fstream << result[i].state.v_ << ","; 
+            m_log_fstream << result[i].state.v_ << ","; 
             m_log_fstream << result[i].state.theta_ << ","; 
-            // m_log_fstream << result[i].state.phi_ << ","; 
+            m_log_fstream << result[i].state.phi_; 
             m_log_fstream << std::endl;
 	}
     m_log_fstream << std::endl;
+
+    // (x,y) points sampled in motion tree
     for (size_t i = 0; i < allNodes.size() ; i++) {
             m_log_fstream << allNodes[i].state.x_ << ",";
-            m_log_fstream << allNodes[i].state.y_ << ","; 
+            m_log_fstream << allNodes[i].state.y_; 
             m_log_fstream << std::endl;
 	}
-
 }
