@@ -15,10 +15,16 @@ int main(int argc, char** argv){
     Obstacle o2 = Obstacle(10,13,0.5,0.5);
     Obstacle o3 = Obstacle(5,5,1,1);
     Obstacle o4 = Obstacle(12,5,1,1);
+    Obstacle o5 = Obstacle(17.5,10,1,1);
+    Obstacle o6 = Obstacle(2.5,17.5,1,1);
+    Obstacle o7 = Obstacle(10,17.5,1,1);
     W2.addObstacle(o1);
     W2.addObstacle(o2);
      W2.addObstacle(o3);
     W2.addObstacle(o4);
+    W2.addObstacle(o5);
+    W2.addObstacle(o6);
+    W2.addObstacle(o7);
 
     // Making a state space
     StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/2);
@@ -112,7 +118,7 @@ int main(int argc, char** argv){
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
             // m_log_fstream << result[i].state.v_ << ","; 
-            // m_log_fstream << result[i].state.theta_ << ","; 
+            m_log_fstream << result[i].state.theta_ << ","; 
             // m_log_fstream << result[i].state.phi_ << ","; 
             m_log_fstream << std::endl;
 	}

@@ -11,8 +11,8 @@
 #include "ControlSpace.hpp"
 #include "MotionTree.hpp"
 
-#define minNrSteps 500
-#define maxNrSteps 1500
+#define minNrSteps 1
+#define maxNrSteps 5
 #define dt 1.0
 
 /**
@@ -197,6 +197,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
 
         v = v_new;
     }
+    // printf("return size: %d\n", (int)new_vertices.size());
     return std::make_pair(MotionTree::Node(), new_vertices);
 
     // ******************* FOR TEST (without PIDController) ****************
@@ -332,28 +333,31 @@ void GUST::SplitGroup(int r){
         W.setSplitted(r);
         for (auto &region : new_regions)
         {
-            W.addRegion(region);
+            int id = W.addRegion(region);
             
             std::vector<MotionTree::Node> vertex_list;
             for(auto &v : Lambda.find(r)->second){
-                if(W.LocateRegion(v.state.x_, v.state.y_) == region.id){
-                    v.region = region.id;
+                // printf("Have something\n");
+                if(W.LocateRegion(v.state.x_, v.state.y_) == id){
+                    // printf("Something in \n");
+                    v.region = id;
                     vertex_list.push_back(v);
                 }
             }
             
             if(vertex_list.size() == 0){
+                // printf("Nothing \n");
                 EmptyLambda.insert(
                     make_pair(
-                        region.id, vertex_list
+                        id, vertex_list
                     )
                 );
                 
             }else{
-
+                // printf("Something should be inserted \n");
                 Lambda.insert(
                     make_pair(
-                        region.id, vertex_list
+                        id, vertex_list
                     )
                 );
             }
