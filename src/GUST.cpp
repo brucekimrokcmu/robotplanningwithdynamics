@@ -12,7 +12,7 @@
 #include "MotionTree.hpp"
 
 #define minNrSteps 1
-#define maxNrSteps 2
+#define maxNrSteps 4
 #define dt 1.0
 
 /**
@@ -83,21 +83,20 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     double random_double = unif(re);
     if(random_double < smallProb){
         s_target = S.getRandomState();
-        // TODO: sample a state in the regions along the shortest path to goal
-        Region targetRegion = W.GetRegion(r);
-        std::vector<int> neighbors = targetRegion.neighbors;
-        int minH =  W.GetRegion(neighbors[0]).h_value;
-        int idx = 0;
-        for(int i = 0; i < neighbors.size(); i++){
-            Region neighbor = W.GetRegion(neighbors[i]);
-            if(neighbor.h_value < minH){
-                idx = i;
-                minH = neighbor.h_value;
-            }
-        }
-        Region minHRegion = W.GetRegion(neighbors[idx]);
-        s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
-        s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
+        // Region targetRegion = W.GetRegion(r);
+        // std::vector<int> neighbors = targetRegion.neighbors;
+        // int minH =  W.GetRegion(neighbors[0]).h_value;
+        // int idx = 0;
+        // for(int i = 0; i < neighbors.size(); i++){
+        //     Region neighbor = W.GetRegion(neighbors[i]);
+        //     if(neighbor.h_value < minH){
+        //         idx = i;
+        //         minH = neighbor.h_value;
+        //     }
+        // }
+        // Region minHRegion = W.GetRegion(neighbors[idx]);
+        // s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
+        // s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
 
     }else{
         s_target = S.getRandomState();

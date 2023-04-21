@@ -1,6 +1,14 @@
 #pragma once
 #include <vector>
 #include <limits>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Polygon_2_algorithms.h>
+#include <CGAL/Polygon_2.h>
+
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+typedef Kernel::Point_2 Point;
+typedef CGAL::Polygon_2<Kernel> Polygon;
 
 #define SMALLESTEXTENT 1
 
@@ -85,7 +93,7 @@ public:
     const Obstacle GetObstacle(int id){return obstacles[id];}
 
    
-    bool Check_collision(double x, double y);
+    bool Check_collision(std::vector<std::pair<double, double>> car);
     Region GetRegion (int id) const;
 
     bool containObstacle(Region r);
