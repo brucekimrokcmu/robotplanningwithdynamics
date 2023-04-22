@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 
+
 #define PI_D 3.14159265358979323846
 
 void addAllObstacles(string fpath, WorkSpace &W) {
@@ -79,7 +80,15 @@ int main(int argc, char** argv){
 
     // valid function
     std::function<bool(StateSpace::VehicleState)> valid = [&](StateSpace::VehicleState s){
-       if(W2.Check_collision(s.x_, s.y_)){
+
+        std::vector<std::pair<double,double>> car;
+        car.push_back(std::make_pair(s.x_, s.y_));
+        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * 0.5, s.y_ + sin(s.theta_) * 0.5));
+        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * 0.5 - sin(s.theta_) * 0.25, s.y_ + sin(s.theta_) * 0.5 + cos(s.theta_) * 0.25));
+        car.push_back(std::make_pair(s.x_ + sin(s.theta_) * 0.25, s.y_ + cos(s.theta_) * 0.25));
+                            
+                           
+       if(W2.Check_collision(car)){
            return false;
        }
        if(s.x_ < 0 || s.x_ > 20 || s.y_ < 0 || s.y_ > 20){
