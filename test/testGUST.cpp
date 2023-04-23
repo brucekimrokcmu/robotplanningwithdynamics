@@ -52,7 +52,7 @@ int main(int argc, char** argv){
     // W2.addObstacle(o5);
     // W2.addObstacle(o6);
     // W2.addObstacle(o7);
-    addAllObstacles("obstacles.txt", W2);
+    addAllObstacles("sample-obstacles.txt", W2);
     cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
 
     // Making a state space
@@ -68,7 +68,7 @@ int main(int argc, char** argv){
     
 
     // Goal region
-    Region goal_region = Region(5,0.8,0.5,0.5); 
+    Region goal_region = Region(17.5,17.5,1,1); 
     //Region goal_region = Region(18,18,0.5,0.5); 
 
     // goal function
