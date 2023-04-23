@@ -24,14 +24,14 @@ int main(){
    
 
     // Test PID controller
-    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.0, 0.0, 1.57, 0.0, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(3., 3., 1.00, 0.5, -0.03);
+    StateSpace::VehicleState s_curr = StateSpace::VehicleState(5.0, 5.0, 1.57, 0.5, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(75.5, 3.5, 0, 0.5, -0.1);
     ControlSpace::VehicleControl pidControl;
     Update up;
     StateSpace::VehicleState s_new;
     std::vector<StateSpace::VehicleState > pidstates;
     pidstates.push_back(s_curr);
-    const int numIter = 10;
+    const int numIter = 100;
     int count = 0;
     while(count < numIter){
         pidControl = cs.PIDController(s_curr,s_target);

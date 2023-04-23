@@ -44,7 +44,11 @@ public:
         // printf("%f, %f\n", x, y);
         double theta = (double)rand() / RAND_MAX * maxHeadingAngle;
         double v = (double)rand() / RAND_MAX * maxSpeed;
-        double phi = (double)rand() / RAND_MAX * maxSteering;
+        if((double)rand() / RAND_MAX > 0.5)
+            v = -v;
+        double phi =(double)rand() / RAND_MAX * maxSteering;
+        if((double)rand() / RAND_MAX > 0.5)
+            phi = -phi;
         return VehicleState(x, y, theta, v, phi);
     };
 

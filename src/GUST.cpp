@@ -45,11 +45,7 @@ std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
         }
     }
     if(index == -1){
-        // printf("Error: No group selected");
-        // std::cout << "Lambda size: " << Lambda.size() << std::endl;
-        // std::cout << "Max weight: " << max_weight << std::endl;
-        // std::cout << "Index: " << Lambda.begin()->second.size() << std::endl;
-        // std::cout << max_weight << std::endl;   
+ 
         return std::make_pair(Lambda.begin()->second, Lambda.begin()->first);
     }else{
         W.addSel(index);
@@ -83,20 +79,23 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     double random_double = unif(re);
     if(random_double < smallProb){
         s_target = S.getRandomState();
-        // Region targetRegion = W.GetRegion(r);
-        // std::vector<int> neighbors = targetRegion.neighbors;
-        // int minH =  W.GetRegion(neighbors[0]).h_value;
-        // int idx = 0;
-        // for(int i = 0; i < neighbors.size(); i++){
-        //     Region neighbor = W.GetRegion(neighbors[i]);
-        //     if(neighbor.h_value < minH){
-        //         idx = i;
-        //         minH = neighbor.h_value;
-        //     }
-        // }
-        // Region minHRegion = W.GetRegion(neighbors[idx]);
-        // s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
-        // s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
+        Region targetRegion = W.GetRegion(r);
+        std::vector<int> neighbors = targetRegion.neighbors;
+        int minH =  W.GetRegion(r).h_value;
+        int idx = 0;
+        std::vector<int> minHNeighbors;
+        for(int i = 0; i < W.countRegionSize(); i++){
+            if(!W.GetRegion(i).splitted && W.GetRegion(i).h_value < minH){
+                minHNeighbors.push_back(i);
+            }
+        }
+        if(minHNeighbors.size() > 0){
+            idx = minHNeighbors[rand() % minHNeighbors.size()];
+        }
+        Region minHRegion = W.GetRegion(idx);
+        s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
+        s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
+        
 
     }else{
         s_target = S.getRandomState();
@@ -172,8 +171,8 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     ControlSpace::VehicleControl u;
 
     // // TODO: Implement random controller
-    bool usePID = ((double) rand() / (RAND_MAX)) < smallProb;
-    usePID = false; // ! Delete when integrating PID controller
+    bool usePID = ((double) rand() / (RAND_MAX)) < 0.8;
+    // usePID = true; // ! Delete when integrating PID controller
     
     ;
     if (!usePID) {
@@ -293,6 +292,7 @@ MotionTree::Node GUST::GroupPlanner(
 
     StateSpace::VehicleState s_target = SampleTarget(r);
     MotionTree::Node v = SelectVertex(Lambda_r, s_target);
+    // s_target.v_ = 0.5;
     std::pair<MotionTree::Node, std::vector<MotionTree::Node>> new_v = ExpandTree(v, s_target);
 
     MotionTree::Node v_last = new_v.first;

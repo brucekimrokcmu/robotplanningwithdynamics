@@ -1,14 +1,7 @@
 #pragma once
 #include <vector>
 #include <limits>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Polygon_2_algorithms.h>
-#include <CGAL/Polygon_2.h>
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-typedef Kernel::Point_2 Point;
-typedef CGAL::Polygon_2<Kernel> Polygon;
 
 #define SMALLESTEXTENT 1
 

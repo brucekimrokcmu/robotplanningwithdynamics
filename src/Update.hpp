@@ -13,7 +13,7 @@ class Update
         
         struct VehicleGeometry 
         {
-            const double length = 0.3; // check URDF
+            const double length = 0.5; // check URDF
 
         } VehicleGeometry;
 
