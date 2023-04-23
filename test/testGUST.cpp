@@ -1,4 +1,5 @@
 #include "../src/GUST.hpp"
+#include "../src/RRT.hpp"
 #include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
@@ -82,16 +83,32 @@ int main(int argc, char** argv){
        if(W2.Check_collision(car)){
            return false;
        }
-       if(s.x_ < constants::workSpaceMinX || s.x_ > constants::workSpaceMaxX || s.y_ < constants::workSpaceMinY || s.y_ > constants::workSpaceMaxY){
+       if(s.x_ <= constants::workSpaceMinX || s.x_ >= constants::workSpaceMaxX || s.y_ <= constants::workSpaceMinY || s.y_ >= constants::workSpaceMaxY){
               return false;
        }
        return true;
     };
 
     // ! Running GUST
-    GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
+    
     std::vector<MotionTree::Node> allNodes;
-    std::vector<MotionTree::Node> result = gust.RunGUST(allNodes);
+    std::vector<MotionTree::Node> result;
+    if(constants::RRT){
+        auto start = std::chrono::high_resolution_clock::now();  
+        RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = rrt.RunRRT(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
+    }else{
+        auto start = std::chrono::high_resolution_clock::now();  
+        GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = gust.RunGUST(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "GUST took " << duration.count() << " milliseconds" << std::endl;
+    }
+    
 
     // Printing the solution
     for(auto n : result){
