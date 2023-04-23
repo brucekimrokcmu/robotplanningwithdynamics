@@ -30,6 +30,8 @@ class ControlSpace{
         double GetTotalErrorSteering() const { return mtotal_error_steering; };
         double GetPrevErrorAcc() const { return mprev_error_acc; };
         double GetPrevErrorSteering() const { return mprev_error_steering; };
+        double GetMaxAcc() const {return max_u_acc;};
+        double GetMaxSteering() const {return max_u_steering;};
 
         void SetTotalErrorAcc(const double total_error_acc) {
             mtotal_error_acc = total_error_acc;
