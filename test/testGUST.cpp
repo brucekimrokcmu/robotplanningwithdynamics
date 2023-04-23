@@ -21,15 +21,15 @@ void addAllObstacles(string fpath, WorkSpace &W) {
         string val;
 
         int index = 0;
-        int coordinates[4];
+        double coordinates[4];
         while (!ss.eof()) {
             getline(ss, val, ',');
-            coordinates[index] = stoi(val);
+            coordinates[index] = stof(val);
+            index += 1;
         }
         Obstacle o = Obstacle(
             coordinates[0], coordinates[1],
             coordinates[2], coordinates[3]);
-
         W.addObstacle(o);
     }
 }
@@ -52,7 +52,8 @@ int main(int argc, char** argv){
     // W2.addObstacle(o5);
     // W2.addObstacle(o6);
     // W2.addObstacle(o7);
-    addAllObstacles("obstacles.txt", W2);
+    addAllObstacles("sample-obstacles.txt", W2);
+    cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
 
     // Making a state space
     StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/6);
@@ -67,6 +68,7 @@ int main(int argc, char** argv){
     
 
     // Goal region
+    //Region goal_region = Region(5,0.8,0.5,0.5); 
     Region goal_region = Region(18,18,0.5,0.5); 
 
     // goal function
