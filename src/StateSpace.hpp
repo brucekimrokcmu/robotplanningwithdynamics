@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cmath>
 #include <random>
+
+#include "Constants.hpp"
 class StateSpace{
 
 public:

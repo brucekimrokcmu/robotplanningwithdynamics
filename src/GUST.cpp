@@ -8,9 +8,7 @@
 #include <cassert>
 
 
-#define minNrSteps 1
-#define maxNrSteps 4
-#define dt 1.0
+
 
 //****************************************************
 //***************** Helper Functions *****************
@@ -161,7 +159,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     ControlSpace::VehicleControl u;
 
 
-    bool usePID = ((double) rand() / (RAND_MAX)) < 0.8;
+    bool usePID = ((double) rand() / (RAND_MAX)) < constants::usePID;
     // usePID = false; // ! Delete when integrating PID controller
     
     ;
@@ -169,7 +167,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         u = M.RandomController();
     }
 
-    int numIter = rand()%(maxNrSteps-minNrSteps + 1) + minNrSteps;
+    int numIter = rand()%(constants::maxNrSteps-constants::minNrSteps + 1) + constants::minNrSteps;
     MotionTree::Node v_parent = v;
 
     for (int k=1; k<numIter; k++) {
@@ -177,7 +175,7 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
             u = M.PIDController(v.state, s_target);
         }
 
-        StateSpace::VehicleState s_new = motion(v.state, u, dt);
+        StateSpace::VehicleState s_new = motion(v.state, u, constants::dt);
         
         
         if (!valid(s_new)) {

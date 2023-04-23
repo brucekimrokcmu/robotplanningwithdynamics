@@ -6,8 +6,9 @@
 #include <sstream>
 #include <string>
 
+#include "../src/Constants.hpp"
 
-#define PI_D 3.14159265358979323846
+
 
 void addAllObstacles(string fpath, WorkSpace &W) {
     fstream fin;
@@ -37,30 +38,19 @@ void addAllObstacles(string fpath, WorkSpace &W) {
 int main(int argc, char** argv){
     srand(time(NULL));
     // Making a workspace
-    //Obstacle o1 = Obstacle(3,3,0.5,0.5);
-    WorkSpace W2 = WorkSpace(0,30,0,30);
-    // Obstacle o2 = Obstacle(10,13,0.5,0.5);
-    // Obstacle o3 = Obstacle(5,5,1,1);
-    // Obstacle o4 = Obstacle(12,5,1,1);
-    // Obstacle o5 = Obstacle(17.5,10,1,1);
-    // Obstacle o6 = Obstacle(2.5,17.5,1,1);
-    // Obstacle o7 = Obstacle(10,17.5,1,1);
-    // W2.addObstacle(o1);
-    // W2.addObstacle(o2);
-    // W2.addObstacle(o3);
-    // W2.addObstacle(o4);
-    // W2.addObstacle(o5);
-    // W2.addObstacle(o6);
-    // W2.addObstacle(o7);
+    WorkSpace W2 = WorkSpace(constants::workSpaceMinX,constants::workSpaceMaxX,
+        constants::workSpaceMinY,constants::workSpaceMaxY);
     addAllObstacles("sample-obstacles.txt", W2);
     cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
 
     // Making a state space
-    StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/6);
+    StateSpace S = StateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
+        constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Initial state
-    StateSpace::VehicleState s_init = StateSpace::VehicleState(0,0,0,0,0);
+    StateSpace::VehicleState s_init = StateSpace::VehicleState(constants::initX, constants::initY, 
+        constants::initHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Making a control space (random we don't need this for now)
-    Update U = Update(1.5,0.5,1,1,0.7);
+    Update U = Update();
     ControlSpace C = ControlSpace();
     // motion function (we don't need this for now)
      std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)>
@@ -68,8 +58,7 @@ int main(int argc, char** argv){
     
 
     // Goal region
-    Region goal_region = Region(17.5,17.5,1,1); 
-    //Region goal_region = Region(18,18,0.5,0.5); 
+    Region goal_region = Region(constants::goalRegionX,constants::goalRegionY,constants::goalRegionWidth,constants::goalRegionWidth); 
 
     // goal function
     std::function<bool(StateSpace::VehicleState)> goal = [&](StateSpace::VehicleState s){
@@ -85,15 +74,15 @@ int main(int argc, char** argv){
 
         std::vector<std::pair<double,double>> car;
         car.push_back(std::make_pair(s.x_, s.y_));
-        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * 0.5, s.y_ + sin(s.theta_) * 0.5));
-        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * 0.5 - sin(s.theta_) * 0.25, s.y_ + sin(s.theta_) * 0.5 + cos(s.theta_) * 0.25));
-        car.push_back(std::make_pair(s.x_ + sin(s.theta_) * 0.25, s.y_ + cos(s.theta_) * 0.25));
+        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * constants::carLength, s.y_ + sin(s.theta_) * constants::carLength));
+        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * constants::carLength - sin(s.theta_) * constants::carWidth, s.y_ + sin(s.theta_) * constants::carLength + cos(s.theta_) * constants::carWidth));
+        car.push_back(std::make_pair(s.x_ + sin(s.theta_) * constants::carWidth, s.y_ + cos(s.theta_) * constants::carWidth));
                             
                            
        if(W2.Check_collision(car)){
            return false;
        }
-       if(s.x_ < 0 || s.x_ > 20 || s.y_ < 0 || s.y_ > 20){
+       if(s.x_ < constants::workSpaceMinX || s.x_ > constants::workSpaceMaxX || s.y_ < constants::workSpaceMinY || s.y_ > constants::workSpaceMaxY){
               return false;
        }
        return true;
@@ -103,7 +92,6 @@ int main(int argc, char** argv){
     GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
     std::vector<MotionTree::Node> allNodes;
     std::vector<MotionTree::Node> result = gust.RunGUST(allNodes);
-    assert(allNodes.size() > 0);
 
     // Printing the solution
     for(auto n : result){

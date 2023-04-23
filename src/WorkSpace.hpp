@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
 #include <limits>
+#include "Constants.hpp"
 
 
-#define SMALLESTEXTENT 1
+
 
 struct Region {
     Region(){};
@@ -26,7 +27,7 @@ struct Region {
     void addSel(){
         nsel++;}
     bool whetherCanSplit(){
-        return x_extent > SMALLESTEXTENT && y_extent > SMALLESTEXTENT;
+        return x_extent > constants::smallestExtent && y_extent > constants::smallestExtent;
     }
 
     double h_value = std::numeric_limits<double>::max();

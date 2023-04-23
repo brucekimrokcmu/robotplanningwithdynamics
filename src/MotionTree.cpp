@@ -18,8 +18,6 @@ std::vector<MotionTree::Node> MotionTree::getPath(Node v_last){
     while(n.id != 0){
         path.push_back(n);
         n = nodes[n.parent];
-        printf("SelfID: %d\n", n.id);
-        printf("ID: %d\n", n.parent);
     }
     path.push_back(n);
     return path;

@@ -1,7 +1,6 @@
 #pragma once
 #include "StateSpace.hpp"
-
-#define PI 3.14159265358979323846  /* pi */
+#include "Constants.hpp"
 
 
 class ControlSpace{
@@ -19,10 +18,10 @@ class ControlSpace{
             mtotal_error_steering(0),
             mprev_error_acc(0),
             mprev_error_steering(0),
-            max_u_acc(7),
-            min_u_acc(0.1),
-            max_u_steering(PI/6),
-            min_u_steering(-PI/6) 
+            max_u_acc(constants::max_u_acc),
+            min_u_acc(constants::min_u_acc),
+            max_u_steering(constants::max_u_steering),
+            min_u_steering(constants::min_u_steering) 
         {
         }
 

@@ -1,4 +1,3 @@
-// #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
 
 
@@ -6,12 +5,12 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
 {
     double u_acc, u_steering_rate;
     // P, I, D controls
-    const double Kp_acc = 0.8;
-    const double Ki_acc = 0.005;
-    const double Kd_acc = 0.18;
-    const double Kp_steering = 0.8;
-    const double Ki_steering = 0.005;
-    const double Kd_steering = 0.18;
+    const double Kp_acc = constants::Kd_acc;
+    const double Ki_acc = constants::Ki_acc;
+    const double Kd_acc = constants::Kd_acc;
+    const double Kp_steering = constants::Kp_steering;
+    const double Ki_steering = constants::Ki_steering;
+    const double Kd_steering = constants::Kd_steering;
 
     // Define PID errors
     double error_acc = s_target.v_ - s_current.v_;
@@ -64,8 +63,8 @@ ControlSpace::VehicleControl ControlSpace::RandomController()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> rand_acc(-0.1, 0.15);                                  // m/s^2
-    std::uniform_real_distribution<> rand_steering_rate(-0.02, 0.02);                   // -30deg ~ 30 deg
+    std::uniform_real_distribution<> rand_acc(constants::rand_acc_min, constants::rand_acc_max);                                  // m/s^2
+    std::uniform_real_distribution<> rand_steering_rate(constants::rand_steering_min, constants::rand_steering_max);                   // -30deg ~ 30 deg
 
     double rand_u_acc = rand_acc(gen);
     double rand_u_steering_rate = rand_steering_rate(gen);

@@ -4,6 +4,7 @@
 
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
+#include "Constants.hpp"
 
 using namespace std;
 
@@ -13,10 +14,10 @@ public:
         
     struct VehicleGeometry 
     {
-        const double length = 0.5; // check URDF
+        const double length = constants::carLength; // check URDF
     } VehicleGeometry;
     Update(){};
-    Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle) {};
+    // Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle) {};
     StateSpace::VehicleState Dynamics(StateSpace::VehicleState s_curr, ControlSpace::VehicleControl u, double dt);
     StateSpace::VehicleState Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt);
 

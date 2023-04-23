@@ -30,10 +30,10 @@ int WorkSpace::addRegion(Region r){
 bool WorkSpace::Check_collision (std::vector<std::pair<double, double>> car){
     for(auto r : obstacles){
         if(
-        r.isObstacle(car[0].first-0.1, car[0].second-0.1)||
-        r.isObstacle(car[1].first+0.1, car[1].second-0.1)||
-        r.isObstacle(car[2].first+0.1, car[2].second+0.1)||
-        r.isObstacle(car[3].first-0.1, car[3].second+0.1))
+        r.isObstacle(car[0].first-constants::collisionThreshold, car[0].second-constants::collisionThreshold)||
+        r.isObstacle(car[1].first+constants::collisionThreshold, car[1].second-constants::collisionThreshold)||
+        r.isObstacle(car[2].first+constants::collisionThreshold, car[2].second+constants::collisionThreshold)||
+        r.isObstacle(car[3].first-constants::collisionThreshold, car[3].second+constants::collisionThreshold))
         {
             return true;
         }
@@ -164,7 +164,7 @@ bool WorkSpace::containObstacle(Region r){
  * @param r : region
 */
 void WorkSpace::decomposeHelper(Region &r){
-    if(r.x_extent < SMALLESTEXTENT || r.y_extent < SMALLESTEXTENT){
+    if(r.x_extent < constants::smallestExtent || r.y_extent < constants::smallestExtent){
         return;
     }
     if(!containObstacle(r)){

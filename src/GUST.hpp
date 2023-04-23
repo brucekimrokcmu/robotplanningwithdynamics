@@ -8,6 +8,7 @@
 #include "StateSpace.hpp"
 #include "ControlSpace.hpp"
 #include "MotionTree.hpp"
+#include "Constants.hpp"
 
 class GUST{
 public: 
@@ -30,12 +31,12 @@ private:
     Region goal_region;
 
     // Constants
-    double time = 60000; // TODO: max time to sampling
-    double delta = 0.5; 
-    double alpha = 8;
-    double beta = 0.85;
-    double smallProb = 0.2;
-    double epsilon = 0.5;
+    double time = constants::MAXTIME; 
+    double delta = constants::DELTA; 
+    double alpha = constants::ALPHA;
+    double beta = constants::BETA;
+    double smallProb = constants::targetNearGoal;
+    double epsilon = constants::EPSILON;
 
     // Motion Tree
     MotionTree T;
@@ -69,7 +70,6 @@ private:
 
     // Help Functions for `GroupPlanner`
     /**
-     * TODO: need implement with small probability choose a random state in the shortes path to the goal
      * Sample a target state in a region
      * @param r : region ID
     */

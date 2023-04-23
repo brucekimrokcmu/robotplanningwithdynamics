@@ -18,5 +18,5 @@ bool StateSpace::nearTarget(VehicleState s_new, VehicleState s_target)
     double theta_diff = s_new.theta_ - s_target.theta_;
     double v_diff = s_new.v_ - s_target.v_;
     double phi_diff = s_new.phi_ - s_target.phi_;
-    return (x_diff*x_diff + y_diff*y_diff ) < 0.1;
+    return (x_diff*x_diff + y_diff*y_diff ) < constants::nearTargetThre;
 }
