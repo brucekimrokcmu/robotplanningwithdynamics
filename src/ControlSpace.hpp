@@ -1,38 +1,65 @@
 #pragma once
-#include <vector>
+#include "StateSpace.hpp"
 
-class ControlSpace {
-public:
-    struct VehicleControl{
-        //TODO: implement vehicle control
-    };
-    ControlSpace( double maxAcceleration, double maxSteeringrate)
-        : maxAcceleration(maxAcceleration), maxSteeringRate(maxSteeringRate){};
-    // Constructor that initializes the motion space with the given parameters
-    
-    bool IsValidControl(double acc, double ste) const;
-    // Returns true if the given state (x, y, theta) is valid within the motion space, false otherwise
-    
-    // std::vector<double> getNextValidState(double x, double y, double theta, double velocity, double steeringAngle, double timeStep) const;
-    // Returns the next valid state of the vehicle given the current state (x, y, theta), velocity, steering angle, and time step,
-    // within the constraints of the motion space
-    
-private:
-    // double length_;         // Length of the vehicle
-    // double width_;          // Width of the vehicle
-    // double maxSpeed_;       // Maximum speed of the vehicle
-    double maxAcceleration;// Maximum acceleration of the vehicle
-    double maxSteeringRate;// Maximum turning radius of the vehicle
-    
-    // Helper functions for checking validity of states and calculating next states within the motion space
-    // bool isValidPosition(double x, double y) const;
-    // bool isValidHeading(double theta) const;
-    bool IsValidAcc(double velocity) const;
-    bool IsValidSteeringRate(double steeringRate) const;
-    // bool isValidTimeStep(double timeStep) const;
-    // double calculateTurningRadius(double steeringAngle) const;
-    // double calculateMaxTurningSpeed(double turningRadius) const;
-    // double calculateNextX(double x, double velocity, double theta, double timeStep) const;
-    // double calculateNextY(double y, double velocity, double theta, double timeStep) const;
-    // double calculateNextTheta(double theta, double velocity, double steeringAngle, double timeStep) const;
+#define PI 3.14159265358979323846  /* pi */
+
+
+class ControlSpace{
+
+    public: 
+
+        struct VehicleControl 
+        {
+            double acc;
+            double steering_rate;
+        };
+
+        ControlSpace() 
+        :   mtotal_error_acc(0), 
+            mtotal_error_steering(0),
+            mprev_error_acc(0),
+            mprev_error_steering(0),
+            max_u_acc(7),
+            min_u_acc(0.1),
+            max_u_steering(PI/6),
+            min_u_steering(-PI/6) 
+        {
+        }
+
+        double GetTotalErrorAcc() const { return mtotal_error_acc; };
+        double GetTotalErrorSteering() const { return mtotal_error_steering; };
+        double GetPrevErrorAcc() const { return mprev_error_acc; };
+        double GetPrevErrorSteering() const { return mprev_error_steering; };
+        double GetMaxAcc() const {return max_u_acc;};
+        double GetMaxSteering() const {return max_u_steering;};
+
+        void SetTotalErrorAcc(const double total_error_acc) {
+            mtotal_error_acc = total_error_acc;
+        };
+        void SetTotalErrorSteering(const double total_error_steering) {
+            mtotal_error_steering = total_error_steering;
+        }
+        void SetPrevErrorAcc(const double prev_error_acc) {
+            mprev_error_acc = prev_error_acc;
+        };
+        void SetPrevErrorSteering(const double prev_error_steering) {
+            mprev_error_steering = prev_error_steering;
+        };
+
+        VehicleControl PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target);
+        VehicleControl RandomController();
+
+    private:
+        StateSpace::VehicleState s_current;
+        StateSpace::VehicleState s_target;
+
+        double mprev_error_acc;
+        double mprev_error_steering;
+        double mtotal_error_acc;
+        double mtotal_error_steering;
+
+        double max_u_acc;
+        double min_u_acc;
+        double max_u_steering;
+        double min_u_steering;
 };
