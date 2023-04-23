@@ -3,30 +3,56 @@
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files
+#include <sstream>
 #include <string>
 
 
 #define PI_D 3.14159265358979323846
 
+void addAllObstacles(string fpath, WorkSpace &W) {
+    fstream fin;
+    fin.open(fpath, ios::in);
+
+    string line;
+    while(getline(fin, line)) {
+        
+        // Split line on comma
+        stringstream ss(line);
+        string val;
+
+        int index = 0;
+        int coordinates[4];
+        while (!ss.eof()) {
+            getline(ss, val, ',');
+            coordinates[index] = stoi(val);
+        }
+        Obstacle o = Obstacle(
+            coordinates[0], coordinates[1],
+            coordinates[2], coordinates[3]);
+
+        W.addObstacle(o);
+    }
+}
 
 int main(int argc, char** argv){
     srand(time(NULL));
     // Making a workspace
-    Obstacle o1 = Obstacle(3,3,0.5,0.5);
-    WorkSpace W2 = WorkSpace(0,20,0,20);
-    Obstacle o2 = Obstacle(10,13,0.5,0.5);
-    Obstacle o3 = Obstacle(5,5,1,1);
-    Obstacle o4 = Obstacle(12,5,1,1);
-    Obstacle o5 = Obstacle(17.5,10,1,1);
-    Obstacle o6 = Obstacle(2.5,17.5,1,1);
-    Obstacle o7 = Obstacle(10,17.5,1,1);
-    W2.addObstacle(o1);
-    W2.addObstacle(o2);
-    W2.addObstacle(o3);
-    W2.addObstacle(o4);
-    W2.addObstacle(o5);
-    W2.addObstacle(o6);
-    W2.addObstacle(o7);
+    //Obstacle o1 = Obstacle(3,3,0.5,0.5);
+    WorkSpace W2 = WorkSpace(0,30,0,30);
+    // Obstacle o2 = Obstacle(10,13,0.5,0.5);
+    // Obstacle o3 = Obstacle(5,5,1,1);
+    // Obstacle o4 = Obstacle(12,5,1,1);
+    // Obstacle o5 = Obstacle(17.5,10,1,1);
+    // Obstacle o6 = Obstacle(2.5,17.5,1,1);
+    // Obstacle o7 = Obstacle(10,17.5,1,1);
+    // W2.addObstacle(o1);
+    // W2.addObstacle(o2);
+    // W2.addObstacle(o3);
+    // W2.addObstacle(o4);
+    // W2.addObstacle(o5);
+    // W2.addObstacle(o6);
+    // W2.addObstacle(o7);
+    addAllObstacles("obstacles.txt", W2);
 
     // Making a state space
     StateSpace S = StateSpace(20,20,2*PI_D, 1, PI_D/6);
@@ -128,7 +154,7 @@ int main(int argc, char** argv){
     m_log_fstream << std::endl;
 
     // States for each step of the plan
-    for (size_t i = 0; i < result.size() ; i++) {
+    for (int i = result.size()-1; i >= 0; i--) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
             m_log_fstream << result[i].state.v_ << ","; 
