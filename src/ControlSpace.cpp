@@ -42,6 +42,19 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
     SetTotalErrorAcc(total_error_ecc + error_acc);
     SetTotalErrorSteering(total_error_steering + error_steering);
 
+    double max_u_acc = GetMaxAcc();
+    double max_u_steering = GetMaxSteering();
+    // if (u_acc > max_u_acc){
+    //     u_acc = max_u_acc;
+    // } else if (u_acc < -max_u_acc) {
+    //     u_acc = -max_u_acc;
+    // }
+    // if (u_steering_rate > max_u_steering) {
+    //     u_steering_rate = max_u_steering;
+    // } else if (u_steering_rate < -max_u_steering) {
+    //     u_steering_rate = -max_u_steering;
+    // }
+
     // Return control input
     return {u_acc, u_steering_rate};
 
