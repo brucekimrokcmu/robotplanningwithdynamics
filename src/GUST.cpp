@@ -40,7 +40,6 @@ std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
         }
     }
     if(index == -1){
- 
         return std::make_pair(Lambda.begin()->second, Lambda.begin()->first);
     }else{
         W.addSel(index);

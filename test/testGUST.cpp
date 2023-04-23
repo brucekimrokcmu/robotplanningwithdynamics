@@ -43,7 +43,10 @@ int main(int argc, char** argv){
         constants::workSpaceMinY,constants::workSpaceMaxY);
     addAllObstacles("sample-obstacles.txt", W2);
     cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
-
+    bool useRRT = false;
+    if(argc > 3 && std::string(argv[3]) == "-rrt"){
+        useRRT = true;
+    }
     // Making a state space
     StateSpace S = StateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
         constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
@@ -93,7 +96,7 @@ int main(int argc, char** argv){
     
     std::vector<MotionTree::Node> allNodes;
     std::vector<MotionTree::Node> result;
-    if(constants::RRT){
+    if(useRRT){
         auto start = std::chrono::high_resolution_clock::now();  
         RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
         result = rrt.RunRRT(allNodes);
@@ -127,6 +130,11 @@ int main(int argc, char** argv){
 		throw std::runtime_error("Cannot open file");
 	}
 	m_log_fstream << argv[1] << std::endl; // Write out map name first
+    if(useRRT){
+        m_log_fstream << "RRT" << std::endl;
+    }else{
+        m_log_fstream << "GUST" << std::endl;
+    }
     m_log_fstream << std::endl;
 
 	// Then write out obstacle boundaries

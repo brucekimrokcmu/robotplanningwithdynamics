@@ -5,7 +5,6 @@
 namespace constants
 {   
     // Basic Constants
-    constexpr bool   RRT { false };
     constexpr double PI_D { 3.14159265358979323846 };
 
     //  ControlSpace
@@ -45,17 +44,17 @@ namespace constants
     constexpr double EPSILON { 0.5 };
     constexpr double ALPHA { 8 };
     constexpr double BETA { 0.85 };
-    constexpr double targetNearGoal { 0.2 };
+    constexpr double targetNearGoal { 0.15 };
     constexpr int    minNrSteps { 1 };
     constexpr int    maxNrSteps { 4 };
     constexpr double dt { 1.0 };
-    constexpr double usePID { 0.5 };
+    constexpr double usePID { 0.75 };
     
     // TEST GUST
     constexpr double workSpaceMinX { 0 };
-    constexpr double workSpaceMaxX { 50 };
+    constexpr double workSpaceMaxX { 20 };
     constexpr double workSpaceMinY { 0 };
-    constexpr double workSpaceMaxY { 50 };
+    constexpr double workSpaceMaxY { 20 };
     constexpr double stateSpaceMaxHeading { 2*PI_D };
     constexpr double stateSpaceMaxSpeed { 1 };
     constexpr double stateSpaceMaxSteering { PI_D/6 };
@@ -65,10 +64,9 @@ namespace constants
     constexpr double initHeading { 0.0 };
     constexpr double initSpeed { 0.0 };
     constexpr double initSteering { 0.0 };
-    constexpr double goalRegionX { 45 };
-    constexpr double goalRegionY { 45 };
-    constexpr double goalRegionWidth { 1 };
-
+    constexpr double goalRegionX { 18 };
+    constexpr double goalRegionY { 18 };
+    constexpr double goalRegionWidth { 0.5 };
 
 }
 #endif
