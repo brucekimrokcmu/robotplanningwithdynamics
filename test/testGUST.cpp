@@ -10,11 +10,34 @@
 
 
 
-void addAllObstacles(string fpath, WorkSpace &W) {
+void addMapConfig(
+    string fpath, WorkSpace &W,
+    double &start_x, double &start_y,
+    double &goal_x, double &goal_y) {
     fstream fin;
     fin.open(fpath, ios::in);
 
+    // First line is start state coordinates
     string line;
+    getline(fin, line);
+    stringstream starts(line);
+    string startstate;
+    getline(starts, startstate, ','); // split on comma
+    start_x = stof(startstate);
+    getline(starts, startstate, ',');
+    start_y = stof(startstate);
+    getline(fin, line); // Blank line to separate
+
+    // Second line is start state coordinates
+    getline(fin, line);
+    stringstream goals(line);
+    string goalstate;
+    getline(goals, goalstate, ','); // split on comma
+    goal_x = stof(goalstate);
+    getline(goals, goalstate, ',');
+    goal_y = stof(goalstate);
+    getline(fin, line);
+
     while(getline(fin, line)) {
         
         // Split line on comma
@@ -40,14 +63,14 @@ int main(int argc, char** argv){
     // Making a workspace
     WorkSpace W2 = WorkSpace(constants::workSpaceMinX,constants::workSpaceMaxX,
         constants::workSpaceMinY,constants::workSpaceMaxY);
-    addAllObstacles("sample-obstacles.txt", W2);
-    cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
+    double start_x, start_y, goal_x, goal_y;
+    addMapConfig("obstacles.txt", W2, start_x, start_y, goal_x, goal_y);
 
     // Making a state space
     StateSpace S = StateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
         constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Initial state
-    StateSpace::VehicleState s_init = StateSpace::VehicleState(constants::initX, constants::initY, 
+    StateSpace::VehicleState s_init = StateSpace::VehicleState(start_x, start_y, 
         constants::initHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Making a control space (random we don't need this for now)
     Update U = Update();
@@ -58,7 +81,7 @@ int main(int argc, char** argv){
     
 
     // Goal region
-    Region goal_region = Region(constants::goalRegionX,constants::goalRegionY,constants::goalRegionWidth,constants::goalRegionWidth); 
+    Region goal_region = Region(goal_x,goal_y,constants::goalRegionWidth,constants::goalRegionWidth); 
 
     // goal function
     std::function<bool(StateSpace::VehicleState)> goal = [&](StateSpace::VehicleState s){

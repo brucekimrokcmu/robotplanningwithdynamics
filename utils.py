@@ -41,16 +41,33 @@ def read_plan_from_file(fpath):
 
         return target_states
 
-def create_obstacles_txt_file(obstacle_extents_arr, fpath):
+def create_map_txt_file(obstacle_extents_arr, start, goal, fpath):
     # x, y, half_extent_x, half_extent_y
-    obstacles_dict = []
-    for position, extents in obstacle_extents_arr:
-        coor = list(position)[:2]
-        coor.extend(extents[:2])
-        obstacles_dict.append(coor)
+    with open(fpath, 'w') as outfile:
+        # start position first
+        outfile.write(str(round(start[0],3)) + ',' + str(round(start[1],3)) + '\n\n')
+        # goal position next
+        outfile.write(str(round(goal[0],3)) + ',' + str(round(goal[1],3)) + '\n\n')
 
-    df = pd.DataFrame(obstacles_dict)
-    df.to_csv(fpath, sep=',', header=False, index=False)
+        # all obstacles
+        for i,(position,extents) in enumerate(obstacle_extents_arr):
+            coor = list(position)[:2]
+            coor.extend(extents[:2])
+            out_str = str(round(coor[0],3)) + ',' +  str(round(coor[1],3))
+            out_str += ',' +  str(round(extents[0],3)) + ',' +  str(round(extents[1],3))
+
+            if (i < len(obstacle_extents_arr)-1):
+                out_str += '\n'
+            outfile.write(out_str)
+    
+    # obstacles_dict = []
+    # for position, extents in obstacle_extents_arr:
+    #     coor = list(position)[:2] # only (x,y) coordinates
+    #     coor.extend(extents[:2])
+    #     obstacles_dict.append(coor)
+
+    # df = pd.DataFrame(obstacles_dict)
+    # df.to_csv(fpath, sep=',', header=False, index=False)
 
 # Arguments for planned path txt file and obstacles txt file
 def get_file_paths():
