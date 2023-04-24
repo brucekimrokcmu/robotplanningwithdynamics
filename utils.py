@@ -1,4 +1,3 @@
-import pandas as pd
 import argparse
 
 class State:
@@ -10,10 +9,10 @@ class State:
         self.orientation = orientation
 
     def __str__(self):
-        s = 'x: ' + str(round(self.x,2)) + "\ty: " + str(round(self.y))
-        s += '\tv: ' + str(round(self.velocity))
-        s += '\tpsi: ' + str(round(self.steering_angle))
-        s += '\ttheta: ' + str(round(self.orientation))
+        s = 'x: ' + str(round(self.x,2)) + "\ty: " + str(round(self.y,2))
+        s += '\tv: ' + str(round(self.velocity,2))
+        s += '\tpsi: ' + str(round(self.steering_angle,2))
+        s += '\ttheta: ' + str(round(self.orientation,2))
         return s
 
 # Read Plan from file into array of states
@@ -40,6 +39,7 @@ def read_plan_from_file(fpath):
             target_states.append(current_state)
 
         return target_states
+read_plan_from_file('output.txt')
 
 def create_map_txt_file(obstacle_extents_arr, start, goal, fpath):
     # x, y, half_extent_x, half_extent_y
@@ -59,15 +59,6 @@ def create_map_txt_file(obstacle_extents_arr, start, goal, fpath):
             if (i < len(obstacle_extents_arr)-1):
                 out_str += '\n'
             outfile.write(out_str)
-    
-    # obstacles_dict = []
-    # for position, extents in obstacle_extents_arr:
-    #     coor = list(position)[:2] # only (x,y) coordinates
-    #     coor.extend(extents[:2])
-    #     obstacles_dict.append(coor)
-
-    # df = pd.DataFrame(obstacles_dict)
-    # df.to_csv(fpath, sep=',', header=False, index=False)
 
 # Arguments for planned path txt file and obstacles txt file
 def get_file_paths():
