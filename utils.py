@@ -39,7 +39,6 @@ def read_plan_from_file(fpath):
             target_states.append(current_state)
 
         return target_states
-read_plan_from_file('output.txt')
 
 def create_map_txt_file(obstacle_extents_arr, start, goal, fpath):
     # x, y, half_extent_x, half_extent_y
