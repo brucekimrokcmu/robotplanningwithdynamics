@@ -2,7 +2,7 @@ import pandas as pd
 import argparse
 
 class State:
-    def __init__(self, x, y, velocity, steering_angle, orientation):
+    def __init__(self, x, y, velocity, orientation, steering_angle):
         self.x = x
         self.y = y
         self.velocity = velocity
