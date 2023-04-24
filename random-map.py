@@ -8,14 +8,6 @@ import os
 # Example usage: 
 # python random-map.py -p output.txt -o obstacles.txt -c compile.sh
 
-# TODO: randomly sample:
-# 1) start state --> make sure this doesn't conflict with obstacles
-# 2) goal state --> make sure this doesn't conflict with obstacles
-# 3) N obstacles
-
-# TODO: randomly generate start state and goal state, output to file
-# TODO: execute gust algo from python
-
 NUM_OBSTACLES = 7
 MAP_SIZE = 5
 BOUNDARY_HEIGHT = 0.5
@@ -56,28 +48,28 @@ box_curve1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box_curve_extents)
 
 bottom_b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[MAP_SIZE/2,0,BOUNDARY_HEIGHT/6])
 bottom_boundary = p.createMultiBody(
-                    baseMass=1,
+                    baseMass=0,
                     baseInertialFramePosition=[0, 0, 0],
                     baseCollisionShapeIndex=bottom_b, 
                     basePosition=[MAP_SIZE/2, 0, 0])
 
 top_b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[MAP_SIZE/2,0,BOUNDARY_HEIGHT/6])
 top_boundary = p.createMultiBody(
-                    baseMass=1,
+                    baseMass=0,
                     baseInertialFramePosition=[0, 0, 0],
                     baseCollisionShapeIndex=top_b, 
                     basePosition=[MAP_SIZE/2, MAP_SIZE, 0])
 
 left_b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0,MAP_SIZE/2,BOUNDARY_HEIGHT/6])
 left_boundary = p.createMultiBody(
-                    baseMass=1,
+                    baseMass=0,
                     baseInertialFramePosition=[0, 0, 0],
                     baseCollisionShapeIndex=left_b, 
                     basePosition=[0, MAP_SIZE/2, 0])
 
 right_b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0,MAP_SIZE/2,BOUNDARY_HEIGHT/6])
 right_boundary = p.createMultiBody(
-                    baseMass=1,
+                    baseMass=0,
                     baseInertialFramePosition=[0, 0, 0],
                     baseCollisionShapeIndex=right_b, 
                     basePosition=[MAP_SIZE, MAP_SIZE/2, 0])
@@ -132,7 +124,7 @@ obstacle_configs = [(coor, box_curve1, box_curve_extents) for coor in obstacles_
 
 for basePosition, baseCollisionShapeIndex, extents in obstacle_configs:
     box = p.createMultiBody(
-                baseMass=1,
+                baseMass=0,
                 baseInertialFramePosition=[0, 0, 0],
                 baseCollisionShapeIndex=baseCollisionShapeIndex, 
                 basePosition=basePosition)
@@ -168,7 +160,7 @@ while collidesWithObstacle(start_x, start_y, obstacles_coordinates):
     start_y = random.uniform(0.5,MAP_SIZE-0.5)
 
 # Drop car into environment
-startPos = [start_x,start_y,0.5]
+startPos = [start_x,start_y,0.16]
 startOriention = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
