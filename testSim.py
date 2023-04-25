@@ -4,18 +4,17 @@ import pybullet_data
 import utils
 import random
 import os
-import math
 
 # Example usage: 
 # python random-map.py -p output.txt -o obstacles.txt -c compile.sh
 
-NUM_OBSTACLES = 2
-MAP_SIZE = 6
+NUM_OBSTACLES = 7
+MAP_SIZE = 5
 BOUNDARY_HEIGHT = 0.5
 HEIGHT = 0.1
 
 planner_path_fpath, obstacles_fpath, cpp_fpath = utils.get_file_paths()
-
+# planner_path_fpath = "testPIDControl.txt" 
 physicsClient = p.connect(p.GUI) #or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
@@ -166,8 +165,8 @@ startOriention = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
 # Randomly generate goal state
-goal_x = 5#random.uniform(0.2,MAP_SIZE-0.2)
-goal_y = 0.55 #random.uniform(0.2,MAP_SIZE-0.2)
+goal_x = 0.5 #random.uniform(0.2,MAP_SIZE-0.2)
+goal_y = 0.5 #random.uniform(0.2,MAP_SIZE-0.2)
 
 while collidesWithObstacle(goal_x, goal_y, obstacles_coordinates) or (goal_x==start_x and goal_y==start_y):
     goal_x = random.uniform(0.2,MAP_SIZE-0.2)
@@ -206,49 +205,35 @@ else:
     Exception('Could not execute planner ' + planner_path_fpath)
 
 # Read input from Planner:
+planner_path_fpath = "testPIDControl.txt" 
 target_states = utils.read_plan_from_file(planner_path_fpath)
 
-# p.setTimeStep(1)
-time.sleep(5)
+p.setStepTime(1/240)
 # Run the simulation
-start = time.time()
 while(True):
-    now = time.time()
-    duration = now - start
-    idx = round(duration)
-    # for current_state in target_states:
-    # print(idx)
-    if(idx >= len(target_states)):
-        time.sleep(60)
-    current_state = target_states[idx]
-    # next_state = target_states[idx+1]
-    # current_velocity = current_state.velocity + (duration - idx) * (next_state.velocity - current_state.velocity)
-    
-    # steering_angle = current_state.steering_angle + (duration - idx) * (next_state.steering_angle - current_state.steering_angle)
-    # print(idx)
-    for i in range (p.getNumJoints(car)):
-        jointInfo = p.getJointInfo(car, i)
-        jointName = jointInfo[1]
+    for current_state in target_states:
+        print(current_state)
+        for i in range (p.getNumJoints(car)):
+            jointInfo = p.getJointInfo(car, i)
+            jointName = jointInfo[1]
 
-        # Set steering angle
-        if "bar_joint" in jointName.decode("utf-8"):
-            p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
-        
-        # Set velocity
-        if "wheel_joint" in jointName.decode("utf-8"):
-            velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
-            # print(velocity)
-            p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=velocity, force=100)
+            # Set steering angle
+            if "bar_joint" in jointName.decode("utf-8"):
+                p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
+            
+            # Set velocity
+            if "wheel_joint" in jointName.decode("utf-8"):
+                velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
+                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=current_state.velocity, force=100)
+                # p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=8.2896, force=100)
 
-        # Don't think we can Set orientation
-        #if "base_scan_joint" in jointName.decode("utf-8"):
-            #if "steer_joint" in jointName.decode("utf-8"):
-        #    p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.orientation)
+            # Don't think we can Set orientation
+            #if "base_scan_joint" in jointName.decode("utf-8"):
+                #if "steer_joint" in jointName.decode("utf-8"):
+            #    p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.orientation)
 
         p.stepSimulation()
-        # time.sleep(0.01)
         #time.sleep(.5)
-    # time.sleep(60)
     #p.stepSimulation()
     # Disconnect from the simulation environment
     #p.disconnect()

@@ -4,15 +4,14 @@
 // define your own namespace to hold constants
 namespace constants
 {   
-
     // Basic Constants
     constexpr double PI_D { 3.14159265358979323846 };
 
     //  ControlSpace
-    constexpr double max_u_acc { 7 };
-    constexpr double min_u_acc { 0.1 };
-    constexpr double max_u_steering { PI_D/6 };
-    constexpr double min_u_steering { -PI_D/6 };
+    constexpr double max_u_acc { 0.15 };
+    constexpr double min_u_acc { -0.1 };
+    constexpr double max_u_steering { 0.02 };
+    constexpr double min_u_steering { -0.02 };
 
     // PIDController
     constexpr double Kp_acc { 0.8 };
@@ -48,14 +47,14 @@ namespace constants
     constexpr double targetNearGoal { 0.2 };
     constexpr int    minNrSteps { 1 };
     constexpr int    maxNrSteps { 4 };
-    constexpr double dt { 1.0 };
+    constexpr double dt { 1 };
     constexpr double usePID { 0.8 };
     
     // TEST GUST
     constexpr double workSpaceMinX { 0 };
-    constexpr double workSpaceMaxX { 30 };
+    constexpr double workSpaceMaxX { 6 };
     constexpr double workSpaceMinY { 0 };
-    constexpr double workSpaceMaxY { 30 };
+    constexpr double workSpaceMaxY { 6 };
     constexpr double stateSpaceMaxHeading { 2*PI_D };
     constexpr double stateSpaceMaxSpeed { 1 };
     constexpr double stateSpaceMaxSteering { PI_D/6 };
@@ -67,8 +66,7 @@ namespace constants
     constexpr double initSteering { 0.0 };
     constexpr double goalRegionX { 18 };
     constexpr double goalRegionY { 18 };
-    constexpr double goalRegionWidth { 1 };
-
+    constexpr double goalRegionWidth { 0.3 };
 
 }
 #endif

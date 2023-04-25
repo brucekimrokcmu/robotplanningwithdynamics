@@ -27,3 +27,19 @@ Red triangles are obstacles.
 Transparency represents the heuristic value: darker means far away from goal or have obstacles in the region
 
 Blue dots are nodes in the path.
+
+## Comparison
+
+If you want to see the comparison between RRT and GUST, you can run:
+
+```sh
+python3 compare.py
+```
+
+It will save 10 graphs for each planner in `/fig` and their statistics in the json files in `/logs`. You can change the number of iteration in `compare.py`
+
+This file will use multiprocessing, so it will take up all of processes of your laptop
+
+## Configuration
+
+You can change the start point, goal point, size of map in `/src/Constants.hpp`
