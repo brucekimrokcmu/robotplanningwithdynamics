@@ -8,8 +8,8 @@ import os
 # Example usage: 
 # python random-map.py -p output.txt -o obstacles.txt -c compile.sh
 
-NUM_OBSTACLES = 3
-MAP_SIZE = 7
+NUM_OBSTACLES = 2
+MAP_SIZE = 6
 BOUNDARY_HEIGHT = 0.5
 HEIGHT = 0.1
 
@@ -152,8 +152,8 @@ def collidesWithObstacle(x,y,obstacles):
 
 
 # Randomly generate start state
-start_x = random.uniform(0.5,MAP_SIZE-0.5)
-start_y = random.uniform(0.5,MAP_SIZE-0.5)
+start_x = 0.5 #random.uniform(0.5,MAP_SIZE-0.5)
+start_y = 0.5 #random.uniform(0.5,MAP_SIZE-0.5)
 
 while collidesWithObstacle(start_x, start_y, obstacles_coordinates):
     start_x = random.uniform(0.5,MAP_SIZE-0.5)
@@ -165,8 +165,8 @@ startOriention = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
 # Randomly generate goal state
-goal_x = random.uniform(0.2,MAP_SIZE-0.2)
-goal_y = random.uniform(0.2,MAP_SIZE-0.2)
+goal_x = 5#random.uniform(0.2,MAP_SIZE-0.2)
+goal_y = 5 #random.uniform(0.2,MAP_SIZE-0.2)
 
 while collidesWithObstacle(goal_x, goal_y, obstacles_coordinates) or (goal_x==start_x and goal_y==start_y):
     goal_x = random.uniform(0.2,MAP_SIZE-0.2)
@@ -207,29 +207,42 @@ else:
 # Read input from Planner:
 target_states = utils.read_plan_from_file(planner_path_fpath)
 
+p.setTimeStep(1)
+time.sleep(5)
 # Run the simulation
+start = time.time()
 while(True):
-    for current_state in target_states:
-        for i in range (p.getNumJoints(car)):
-            jointInfo = p.getJointInfo(car, i)
-            jointName = jointInfo[1]
+    now = time.time()
+    duration = now - start
+    idx = round(duration)
+    # for current_state in target_states:
+    if(idx >= len(target_states)):
+        time.sleep(60)
+    current_state = target_states[idx]
+    
+    # print(idx)
+    for i in range (p.getNumJoints(car)):
+        jointInfo = p.getJointInfo(car, i)
+        jointName = jointInfo[1]
 
-            # Set steering angle
-            if "bar_joint" in jointName.decode("utf-8"):
-                p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
-            
-            # Set velocity
-            if "wheel_joint" in jointName.decode("utf-8"):
-                velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
-                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=velocity, force=100)
+        # Set steering angle
+        if "bar_joint" in jointName.decode("utf-8"):
+            p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
+        
+        # Set velocity
+        if "wheel_joint" in jointName.decode("utf-8"):
+            velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
+            p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=velocity, force=100)
 
-            # Don't think we can Set orientation
-            #if "base_scan_joint" in jointName.decode("utf-8"):
-                #if "steer_joint" in jointName.decode("utf-8"):
-            #    p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.orientation)
+        # Don't think we can Set orientation
+        #if "base_scan_joint" in jointName.decode("utf-8"):
+            #if "steer_joint" in jointName.decode("utf-8"):
+        #    p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.orientation)
 
-        p.stepSimulation()
+    p.stepSimulation()
+        # time.sleep(0.01)
         #time.sleep(.5)
+    # time.sleep(60)
     #p.stepSimulation()
     # Disconnect from the simulation environment
     #p.disconnect()

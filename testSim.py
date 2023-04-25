@@ -208,6 +208,7 @@ else:
 planner_path_fpath = "testPIDControl.txt" 
 target_states = utils.read_plan_from_file(planner_path_fpath)
 
+p.setStepTime(1/240)
 # Run the simulation
 while(True):
     for current_state in target_states:
@@ -223,7 +224,7 @@ while(True):
             # Set velocity
             if "wheel_joint" in jointName.decode("utf-8"):
                 velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
-                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=velocity, force=100)
+                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=current_state.velocity, force=100)
                 # p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=8.2896, force=100)
 
             # Don't think we can Set orientation
