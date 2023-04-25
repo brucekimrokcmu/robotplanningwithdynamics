@@ -191,8 +191,8 @@ int main(int argc, char** argv){
     for (int i = result.size()-1; i >= 0; i--) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
+            m_log_fstream << result[i].state.theta_ << ",";
             m_log_fstream << result[i].state.v_ << ","; 
-            m_log_fstream << result[i].state.theta_ << ","; 
             m_log_fstream << result[i].state.phi_; 
             m_log_fstream << std::endl;
 	}

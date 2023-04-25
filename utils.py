@@ -1,12 +1,13 @@
 import argparse
 
 class State:
-    def __init__(self, x, y, velocity, orientation, steering_angle):
+    def __init__(self, x, y, orientation, velocity,steering_angle):
         self.x = x
         self.y = y
+        self.orientation = orientation
         self.velocity = velocity
         self.steering_angle = steering_angle
-        self.orientation = orientation
+        
 
     def __str__(self):
         s = 'x: ' + str(round(self.x,2)) + "\ty: " + str(round(self.y,2))
