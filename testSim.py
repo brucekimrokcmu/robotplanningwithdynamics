@@ -8,13 +8,13 @@ import os
 # Example usage: 
 # python random-map.py -p output.txt -o obstacles.txt -c compile.sh
 
-NUM_OBSTACLES = 3
-MAP_SIZE = 7
+NUM_OBSTACLES = 7
+MAP_SIZE = 5
 BOUNDARY_HEIGHT = 0.5
 HEIGHT = 0.1
 
 planner_path_fpath, obstacles_fpath, cpp_fpath = utils.get_file_paths()
-
+# planner_path_fpath = "testPIDControl.txt" 
 physicsClient = p.connect(p.GUI) #or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
@@ -152,8 +152,8 @@ def collidesWithObstacle(x,y,obstacles):
 
 
 # Randomly generate start state
-start_x = random.uniform(0.5,MAP_SIZE-0.5)
-start_y = random.uniform(0.5,MAP_SIZE-0.5)
+start_x = 0.5 #random.uniform(0.5,MAP_SIZE-0.5)
+start_y = 0.5 #random.uniform(0.5,MAP_SIZE-0.5)
 
 while collidesWithObstacle(start_x, start_y, obstacles_coordinates):
     start_x = random.uniform(0.5,MAP_SIZE-0.5)
@@ -165,8 +165,8 @@ startOriention = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
 # Randomly generate goal state
-goal_x = random.uniform(0.2,MAP_SIZE-0.2)
-goal_y = random.uniform(0.2,MAP_SIZE-0.2)
+goal_x = 0.5 #random.uniform(0.2,MAP_SIZE-0.2)
+goal_y = 0.5 #random.uniform(0.2,MAP_SIZE-0.2)
 
 while collidesWithObstacle(goal_x, goal_y, obstacles_coordinates) or (goal_x==start_x and goal_y==start_y):
     goal_x = random.uniform(0.2,MAP_SIZE-0.2)
@@ -205,11 +205,13 @@ else:
     Exception('Could not execute planner ' + planner_path_fpath)
 
 # Read input from Planner:
+planner_path_fpath = "testPIDControl.txt" 
 target_states = utils.read_plan_from_file(planner_path_fpath)
 
 # Run the simulation
 while(True):
     for current_state in target_states:
+        print(current_state)
         for i in range (p.getNumJoints(car)):
             jointInfo = p.getJointInfo(car, i)
             jointName = jointInfo[1]
@@ -222,6 +224,7 @@ while(True):
             if "wheel_joint" in jointName.decode("utf-8"):
                 velocity = 6.28*(current_state.velocity / (0.12*3.14)) 
                 p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=velocity, force=100)
+                # p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=8.2896, force=100)
 
             # Don't think we can Set orientation
             #if "base_scan_joint" in jointName.decode("utf-8"):

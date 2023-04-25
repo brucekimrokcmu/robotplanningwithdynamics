@@ -46,16 +46,16 @@ namespace constants
     constexpr double ALPHA { 8 };
     constexpr double BETA { 0.85 };
     constexpr double targetNearGoal { 0.2 };
-    constexpr int    minNrSteps { 1 };
-    constexpr int    maxNrSteps { 4 };
-    constexpr double dt { 1.0 };
+    constexpr int    minNrSteps { 100 };
+    constexpr int    maxNrSteps { 1000 };
+    constexpr double dt { 1.0/240.0 };
     constexpr double usePID { 0.8 };
     
     // TEST GUST
     constexpr double workSpaceMinX { 0 };
-    constexpr double workSpaceMaxX { 30 };
+    constexpr double workSpaceMaxX { 7 };
     constexpr double workSpaceMinY { 0 };
-    constexpr double workSpaceMaxY { 30 };
+    constexpr double workSpaceMaxY { 7 };
     constexpr double stateSpaceMaxHeading { 2*PI_D };
     constexpr double stateSpaceMaxSpeed { 1 };
     constexpr double stateSpaceMaxSteering { PI_D/6 };

@@ -24,8 +24,8 @@ int main(){
    
 
     // Test PID controller
-    StateSpace::VehicleState s_curr = StateSpace::VehicleState(5.0, 5.0, 1.57, 0.5, 0.0);
-    StateSpace::VehicleState s_target = StateSpace::VehicleState(75.5, 3.5, 0, 0.5, -0.1);
+    StateSpace::VehicleState s_curr = StateSpace::VehicleState(0.5, 0.5, 0.0, 0.5, 0.0);
+    StateSpace::VehicleState s_target = StateSpace::VehicleState(4.5, 0.5, 0.0, 0.5, 0.0);
     ControlSpace::VehicleControl pidControl;
     Update up;
     StateSpace::VehicleState s_new;
