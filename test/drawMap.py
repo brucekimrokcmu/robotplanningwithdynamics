@@ -89,7 +89,7 @@ def animate(i):
 
 
 
-anim = FuncAnimation(fig, animate, frames=20, interval=500, init_func=init, repeat=False)
+anim = FuncAnimation(fig, animate, frames=len(dots), interval=500, init_func=init, repeat=False)
 
 writergif = animation.PillowWriter(fps=20)
 anim.save('path.gif',writer=writergif)
