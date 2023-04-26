@@ -5,9 +5,17 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--plan', help='file path for the planned path')
+parser.add_argument('-x', '--mapx', help='map size x dimension')
+parser.add_argument('-y', '--mapy', help='map size y dimension')
 args = parser.parse_args()
 planner_path_fpath = args.plan if args.plan else Exception(
     'Need file path for planned path.')
+xdim = args.mapx if args.mapx else Exception(
+    'Need map size x dimension.')
+ydim = args.mapy if args.mapy else Exception(
+    'Need map size y dimension.')
+xdim = int(xdim)
+ydim = int(ydim)
 
 
 # Open the text file
@@ -71,8 +79,8 @@ def init():
             plt.Rectangle((x, y), x_extent, y_extent, alpha=0.5, facecolor='red')
     )
 
-    ax.set_xlim(0, 30)
-    ax.set_ylim(0, 30)
+    ax.set_xlim(0, xdim)
+    ax.set_ylim(0, ydim)
     ax.set_xlabel('X-axis')
     ax.set_ylabel('Y-axis')
 
