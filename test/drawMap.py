@@ -1,12 +1,22 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.animation import FuncAnimation
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--plan', help='file path for the planned path')
+args = parser.parse_args()
+planner_path_fpath = args.plan if args.plan else Exception(
+    'Need file path for planned path.')
+
 
 # Open the text file
-with open('../output.txt', 'r') as f:
+with open(planner_path_fpath, 'r') as f:
     # read name
     name = f.readline()
     f.readline() # skip the new line after map
+
+    algo = f.readline() # algorithm
     
     # read obstacles
     obstacles = []
@@ -35,7 +45,6 @@ with open('../output.txt', 'r') as f:
 
 # Create a figure and axis object
 fig, ax = plt.subplots()
-
 # prev_x = 0
 # prev_y = 0
 
@@ -76,7 +85,9 @@ def animate(i):
     patches.append(ax.add_patch(
         plt.Rectangle((x, y), 0.5, 0.25, angle= theta/3.14 * 180 , alpha=1,  color='red')
     ))
-
+    # ax.add_patch(
+    #     plt.Rectangle((x, y), 0.5, 0.25, angle= theta/3.14 * 180 , alpha=1,  color='red')
+    # )
     #ax.plot([prev_x, x], [prev_y, y], color='yellow', alpha=0.5)
     
     return patches
@@ -90,7 +101,7 @@ def animate(i):
 
 
 anim = FuncAnimation(fig, animate, frames=len(dots), interval=500, init_func=init, repeat=False)
-
 writergif = animation.PillowWriter(fps=20)
+
 anim.save('path.gif',writer=writergif)
 #plt.show()
