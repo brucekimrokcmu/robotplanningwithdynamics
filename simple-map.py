@@ -9,7 +9,7 @@ import os
 # python simple-map.py -p output.txt -o obstacles.txt -c compile.sh
 
 NUM_OBSTACLES = 7
-MAP_SIZE = 10
+MAP_SIZE = 15
 BOUNDARY_HEIGHT = 0.5
 HEIGHT = 0.1
 
@@ -19,32 +19,16 @@ physicsClient = p.connect(p.GUI) #or p.DIRECT for non-graphical version
 p.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
 p.setGravity(0,0,-10)
 
-planeId = p.loadURDF("plane.urdf")
 
+
+planeId = p.loadURDF("plane.urdf")
+# p.changeDynamics(planeId, -1, rollingFriction=0.01)
 
 # Create a box object
 startOrientation = p.getQuaternionFromEuler([0,0,0])
 
-# (basePosition, baseCollisionShapeIndex, extents)
-# box_extents = [0.1, 1.5, 0.2]
-# box1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box_extents)
 box_curve_extents = [0.2, 0.1, HEIGHT]
 box_curve1 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box_curve_extents)
-# box2_extents = [1.5, 0.1, 0.2]
-# box2 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box2_extents)
-# box3_extents = [4.2, 0.1, 0.2]
-# box3 = p.createCollisionShape(p.GEOM_BOX, halfExtents=box3_extents)
-
-# Draw map boundary
-
-# b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[MAP_SIZE/2,MAP_SIZE/2, BOUNDARY_HEIGHT/2])
-# boundary = p.createMultiBody(
-#                     baseMass=1,
-#                     baseInertialFramePosition=[0, 0, 0],
-#                     baseCollisionShapeIndex=b, 
-#                     basePosition=[MAP_SIZE/2, MAP_SIZE/2, 0])
-
-
 bottom_b = p.createCollisionShape(p.GEOM_BOX, halfExtents=[MAP_SIZE/2,0,BOUNDARY_HEIGHT/6])
 bottom_boundary = p.createMultiBody(
                     baseMass=0,
@@ -109,6 +93,10 @@ startPos = [0.5,5,0.16]
 startOriention = p.getQuaternionFromEuler([0,0,0])
 car = p.loadURDF("car.urdf",startPos, startOrientation)
 
+car_mass =  10.0
+p.changeDynamics(car, -1, mass=car_mass)
+
+
 goal_x = 9.5
 goal_y = 5
 
@@ -144,23 +132,36 @@ else:
 target_states = utils.read_plan_from_file(planner_path_fpath)
 
 # Run the simulation
-while(True):
-    for current_state in target_states:
-        for i in range (p.getNumJoints(car)):
-            jointInfo = p.getJointInfo(car, i)
-            jointName = jointInfo[1]
 
-            # Set steering angle
-            if "bar_joint" in jointName.decode("utf-8"):
-                p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
-            
-            # Set velocity
-            if "wheel_joint" in jointName.decode("utf-8"):
-                p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=current_state.velocity, force=10)
+run_time = 60.0
+num_steps = len(target_states)
+# print(num_steps)
+time_step = run_time/num_steps
 
-            p.stepSimulation()
-        #time.sleep(1./240)
-    time.sleep(30)
+for i, current_state in enumerate(target_states):
+    
+    t = i*time_step
+    
+    if i < num_steps-1:
+        next_state = target_states[i+1]
+        t_norm = t / time_step
+        current_state = current_state.interpolate(next_state, t_norm)
+
+    for i in range (p.getNumJoints(car)):
+        jointInfo = p.getJointInfo(car, i)
+        jointName = jointInfo[1]
+
+        # Set steering angle
+        if "bar_joint" in jointName.decode("utf-8"):
+            p.setJointMotorControl2(car, i, p.POSITION_CONTROL,targetPosition=current_state.steering_angle)
+        
+        # Set velocity
+        if "wheel_joint" in jointName.decode("utf-8"):
+            p.setJointMotorControl2(car, i, p.VELOCITY_CONTROL, targetVelocity=current_state.velocity, force=10)
+
+        p.stepSimulation()
+    time.sleep(time_step)
+time.sleep(300)
     #p.stepSimulation()
     # Disconnect from the simulation environment
     #p.disconnect()

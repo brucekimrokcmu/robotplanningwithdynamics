@@ -1,4 +1,5 @@
 #include "../src/GUST.hpp"
+#include "../src/RRT.hpp"
 #include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
@@ -65,7 +66,11 @@ int main(int argc, char** argv){
         constants::workSpaceMinY,constants::workSpaceMaxY);
     double start_x, start_y, goal_x, goal_y;
     addMapConfig("obstacles.txt", W2, start_x, start_y, goal_x, goal_y);
-
+    cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
+    bool useRRT = false;
+    if(argc > 3 && std::string(argv[3]) == "-rrt"){
+        useRRT = true;
+    }
     // Making a state space
     StateSpace S = StateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
         constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
@@ -105,16 +110,32 @@ int main(int argc, char** argv){
        if(W2.Check_collision(car)){
            return false;
        }
-       if(s.x_ < constants::workSpaceMinX || s.x_ > constants::workSpaceMaxX || s.y_ < constants::workSpaceMinY || s.y_ > constants::workSpaceMaxY){
+       if(s.x_ <= constants::workSpaceMinX || s.x_ >= constants::workSpaceMaxX || s.y_ <= constants::workSpaceMinY || s.y_ >= constants::workSpaceMaxY){
               return false;
        }
        return true;
     };
 
     // ! Running GUST
-    GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
+    
     std::vector<MotionTree::Node> allNodes;
-    std::vector<MotionTree::Node> result = gust.RunGUST(allNodes);
+    std::vector<MotionTree::Node> result;
+    if(useRRT){
+        auto start = std::chrono::high_resolution_clock::now();  
+        RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = rrt.RunRRT(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
+    }else{
+        auto start = std::chrono::high_resolution_clock::now();  
+        GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = gust.RunGUST(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "GUST took " << duration.count() << " milliseconds" << std::endl;
+    }
+    
 
     // Printing the solution
     for(auto n : result){
@@ -170,8 +191,8 @@ int main(int argc, char** argv){
     for (int i = result.size()-1; i >= 0; i--) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
+            m_log_fstream << result[i].state.theta_ << ",";
             m_log_fstream << result[i].state.v_ << ","; 
-            m_log_fstream << result[i].state.theta_ << ","; 
             m_log_fstream << result[i].state.phi_; 
             m_log_fstream << std::endl;
 	}
@@ -183,4 +204,5 @@ int main(int argc, char** argv){
             m_log_fstream << allNodes[i].state.y_; 
             m_log_fstream << std::endl;
 	}
+
 }

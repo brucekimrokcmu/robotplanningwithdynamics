@@ -278,7 +278,7 @@ void WorkSpace::CalculateHeuristic(double x, double y){
             if(!neighbor.expanded && neighbor.h_value > current.h_value + 1.0){
                 
                 if(containObstacle(neighbor)){
-                     regions[current.neighbors[i]].h_value = current.h_value + 10.0;
+                     regions[current.neighbors[i]].h_value = current.h_value + 3.0;
                 }else{
                     regions[current.neighbors[i]].h_value = current.h_value + 1.0;
                 }
