@@ -103,6 +103,7 @@ int main(int argc, char** argv){
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
         std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
+        std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
     }else{
         auto start = std::chrono::high_resolution_clock::now();  
         GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
@@ -110,14 +111,14 @@ int main(int argc, char** argv){
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
         std::cout << "GUST took " << duration.count() << " milliseconds" << std::endl;
+        std::cout << "GUST has " << allNodes.size() << " nodes" << std::endl;
     }
     
 
     // Printing the solution
-    for(auto n : result){
-        std::cout << n.state.x_ << " " << n.state.y_  << std::endl;
-    }
-
+    // for(auto n : result){
+    //     std::cout << n.state.x_ << " " << n.state.y_  << std::endl;
+    // }
     
 
     /** 

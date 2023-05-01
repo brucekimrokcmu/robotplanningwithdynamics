@@ -98,10 +98,10 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
             s_target.x_ = minHRegion.x_start + rand()/RAND_MAX * minHRegion.x_extent;
             s_target.y_ = minHRegion.y_start + rand()/RAND_MAX * minHRegion.y_extent;
         }else{
-            double dist = PointDistance(W.GetRegion(r).x_start, W.GetRegion(r).y_start, targetRegion.x_start, targetRegion.y_start);
+            double dist = PointDistance(W.GetRegion(r).x_start, W.GetRegion(r).y_start, goal_region.x_start, goal_region.y_start);
             double frac = rand()/RAND_MAX * dist;
-            s_target.x_ = W.GetRegion(r).x_start + frac * (targetRegion.x_start - W.GetRegion(r).x_start);
-            s_target.y_ = W.GetRegion(r).y_start + frac * (targetRegion.y_start - W.GetRegion(r).y_start);
+            s_target.x_ = W.GetRegion(r).x_start + frac * (goal_region.x_start - W.GetRegion(r).x_start);
+            s_target.y_ = W.GetRegion(r).y_start + frac * (goal_region.y_start - W.GetRegion(r).y_start);
         }
     }else{
         s_target = S.getRandomState();

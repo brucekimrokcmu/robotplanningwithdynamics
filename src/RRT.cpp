@@ -35,10 +35,15 @@ inline double PointDistance(
 */
 StateSpace::VehicleState RRT::SampleTarget() {
     // randomly sample a state from S in region r
-  
+    if(rand() < 0.5){
+        StateSpace::VehicleState s_target = S.getRandomState();
+        s_target.x_ = goal_region.x_start;
+        s_target.y_ = goal_region.y_start;
+        return s_target;
+    }
     StateSpace::VehicleState s_target = S.getRandomState();
-    
     return s_target;
+    
 }
 
 
@@ -126,6 +131,7 @@ MotionTree::Node RRT::GroupPlanner() {
 
     StateSpace::VehicleState s_target = SampleTarget();
     MotionTree::Node v = SelectVertex( s_target);
+    
     // s_target.v_ = 0.5;
     std::pair<MotionTree::Node, std::vector<MotionTree::Node>> new_v = ExpandTree(v, s_target);
 

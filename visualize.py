@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
+from matplotlib.ticker import PercentFormatter
 
 
 def visualize(i: int):
@@ -74,8 +75,8 @@ def visualize(i: int):
             print("Wrong")
 
     # Set the axis limits and labels
-    ax.set_xlim(0, 20)
-    ax.set_ylim(0, 20)
+    ax.set_xlim(0, 24)
+    ax.set_ylim(0, 6)
     ax.set_xlabel('X-axis')
     ax.set_ylabel('Y-axis')
 
@@ -83,3 +84,29 @@ def visualize(i: int):
     plt.savefig(f"fig/{planner}-{i}.jpg")
     plt.close()
     Path(f"./output-{i}.txt").unlink()
+
+def visualize_comparison(GUST, RRT):
+    x = [5*i for i in range(24)]
+    gust_sort = sorted(GUST)
+    rrt_sort = sorted(RRT)
+    y_gust = [sum(1 for g in gust_sort if g <= i)/50 for i in x]
+    y_rrt = [sum(1 for r in rrt_sort if r <= i)/50 for i in x]
+    # plot the data as line graphs
+    plt.plot(x, y_gust, label='GUST')
+    plt.plot(x, y_rrt, label='RRT')
+
+    plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
+
+    # add labels, title, and legend
+    plt.xlabel('times[s]')
+    plt.ylabel('solved[%]]')
+    plt.title('Map3')
+    plt.legend()
+
+    # Show the plot
+    plt.savefig("fig/comparison.pdf")
+    plt.close()
+
+    for item in Path(".").glob("output-*.txt"):
+        item.unlink()
+    
