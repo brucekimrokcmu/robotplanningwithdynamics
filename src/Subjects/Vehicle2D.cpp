@@ -1,13 +1,7 @@
+#include "Vehicle2D.hpp"
 #include <cmath>
-#include <vector>
-#include "Update.hpp"
 
-
-using namespace std;
-
-StateSpace::VehicleState Update::Dynamics(StateSpace::VehicleState s_curr, ControlSpace::VehicleControl u, double dt)
-{
-    
+Vehicle2D::Vehicle2DState Vehicle2D::Dynamics(const Vehicle2DState s_curr, const Vehicle2DControl u, double dt){
     double x = s_curr.x_;
     double y = s_curr.y_;
     double theta = s_curr.theta_;
@@ -19,20 +13,17 @@ StateSpace::VehicleState Update::Dynamics(StateSpace::VehicleState s_curr, Contr
 
     double x_dot = v*cos(theta)*cos(psi);
     double y_dot = v*sin(theta)*cos(psi);
-    double theta_dot = v*sin(psi)/VehicleGeometry.length;
+    double theta_dot = v*sin(psi)/length;
     double v_dot = acc;
     double psi_dot = steering_rate;
 
-    StateSpace::VehicleState s_dot = {x_dot, y_dot, theta_dot, v_dot, psi_dot}; // Dynamics         
+    Vehicle2DState s_dot = {x_dot, y_dot, theta_dot, v_dot, psi_dot}; // Dynamics         
 
     return s_dot;
 }
-
-StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt) 
-{
-    //Using Explicit Midpoint
-    StateSpace::VehicleState s_temp, s_new;
-    StateSpace::VehicleState f1 = Dynamics(s_curr, u, dt);
+Vehicle2D::Vehicle2DState Vehicle2D::Motion(const Vehicle2DState s_curr, const Vehicle2DControl u, double dt){
+    Vehicle2DState s_temp, s_new;
+    Vehicle2DState f1 = Dynamics(s_curr, u, dt);
 
     s_temp.x_ = s_curr.x_ + 0.5 * dt * f1.x_;
     s_temp.y_ = s_curr.y_ + 0.5 * dt * f1.y_;
@@ -40,7 +31,7 @@ StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, c
     s_temp.v_ = s_curr.v_ + 0.5 * dt * f1.v_;
     s_temp.phi_ = s_curr.phi_ + 0.5 * dt * f1.phi_;
 
-    StateSpace::VehicleState f2 = Dynamics(s_temp, u, dt);
+    Vehicle2DState f2 = Dynamics(s_temp, u, dt);
 
     s_new.x_ = s_curr.x_ + dt * f2.x_;
     s_new.y_ = s_curr.y_ + dt * f2.y_;
@@ -49,8 +40,4 @@ StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, c
     s_new.phi_ = s_curr.phi_ + dt * f2.phi_;
 
     return s_new;
-
 }
-
-
-

@@ -1,7 +1,8 @@
-#include "ControlSpace.hpp"
+#include "Vehicle2DControl.hpp"
 
 
-ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target)
+
+Vehicle2D::Vehicle2DControl Vehicle2DControlSpace::PIDController(Vehicle2D::Vehicle2DState s_current, Vehicle2D::Vehicle2DState s_target)
 {
     double u_acc, u_steering_rate;
     // P, I, D controls
@@ -60,7 +61,7 @@ ControlSpace::VehicleControl ControlSpace::PIDController(StateSpace::VehicleStat
 
 }
         
-ControlSpace::VehicleControl ControlSpace::RandomController()
+Vehicle2D::Vehicle2DControl Vehicle2DControlSpace::RandomController()
 {
     std::random_device rd;
     std::mt19937 gen(rd());

@@ -5,29 +5,30 @@
 #include <chrono> 
 
 #include "WorkSpace.hpp"
-#include "StateSpace.hpp"
-#include "ControlSpace.hpp"
+#include "./StateSpaces/StateSpace.hpp"
+#include "./ControlSpaces/ControlSpace.hpp"
 #include "MotionTree.hpp"
 #include "Constants.hpp"
 
+template<typename State, typename Control>
 class GUST{
 public: 
-    GUST(StateSpace& S, WorkSpace& W, ControlSpace& M,  
-        std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion, 
-        std::function<bool(StateSpace::VehicleState)> valid, const StateSpace::VehicleState& s_init, 
-        std::function<bool(StateSpace::VehicleState)> goal, Region goal_region)
+    GUST(StateSpace<State>& S, WorkSpace& W, ControlSpace<State,Control>& M,  
+        std::function<State(State, Control, double)> motion, 
+        std::function<bool(State)> valid, const State& s_init, 
+        std::function<bool(State)> goal, Region goal_region)
             : S(S), W(W), M(M), motion(motion), valid(valid), s_init(s_init),goal(goal), goal_region(goal_region){}
     
-    std::vector<MotionTree::Node> RunGUST(std::vector<MotionTree::Node> &allNodes);  // Main function to Run GUST
+    std::vector<typename MotionTree<State,Control>::Node> RunGUST(std::vector<typename MotionTree<State,Control>::Node> &allNodes);  // Main function to Run GUST
 private:
     // Input Parameters
-    StateSpace& S; 
+    StateSpace<State>& S; 
     WorkSpace& W; 
-    ControlSpace& M;  
-    std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)> motion; 
-    std::function<bool(StateSpace::VehicleState)> valid;
-    const StateSpace::VehicleState& s_init;
-    std::function<bool(StateSpace::VehicleState)> goal;
+    ControlSpace<State,Control>& M;  
+    std::function<State(State, Control, double)> motion; 
+    std::function<bool(State)> valid;
+    const State& s_init;
+    std::function<bool(State)> goal;
     Region goal_region;
 
     // Constants
@@ -39,10 +40,10 @@ private:
     double epsilon = constants::EPSILON;
 
     // Motion Tree
-    MotionTree T;
+    MotionTree<State,Control> T;
     // Set of set of vertices in small regions
-    std::unordered_map<int,std::vector<MotionTree::Node>> Lambda;
-    std::unordered_map<int,std::vector<MotionTree::Node>> EmptyLambda;
+    std::unordered_map<int,std::vector<typename MotionTree<State,Control>::Node>> Lambda;
+    std::unordered_map<int,std::vector<typename MotionTree<State,Control>::Node>> EmptyLambda;
 
     // Function Interfaces
     /**
@@ -53,7 +54,7 @@ private:
      * Select a group of vertices from Lambda which has largest weight
      * @return pair of vector of Nodes and the region ID
     */
-    std::pair<std::vector<MotionTree::Node>, int> SelectGroup();
+    std::pair<std::vector<typename MotionTree<State,Control>::Node>, int> SelectGroup();
     /**
      * Expand the tree from a group of vertices
      * @param Lambda_r : vector of Nodes
@@ -61,7 +62,7 @@ private:
      * @return Node : if it is a empty node (id = -1), then do not find a path
      *              else return the path
     */
-    MotionTree::Node GroupPlanner(std::vector<MotionTree::Node> Lambda_r, int r);
+    typename MotionTree<State,Control>::Node GroupPlanner(std::vector<typename MotionTree<State,Control>::Node> Lambda_r, int r);
     /**
      * Refine the decomposition of the workspace
      * @param r : region ID
@@ -73,14 +74,14 @@ private:
      * Sample a target state in a region
      * @param r : region ID
     */
-    StateSpace::VehicleState SampleTarget(int r);
+    State SampleTarget(int r);
     /**
      * Select a vertex from Lambda_r
      * @param Lambda_r : vector of Nodes
      * @param s_target : target state
      * @return Node to expand
     */
-    MotionTree::Node SelectVertex(std::vector<MotionTree::Node> Lambda_r, StateSpace::VehicleState s_target);
+    typename MotionTree<State,Control>::Node SelectVertex(std::vector<typename MotionTree<State,Control>::Node> Lambda_r, State s_target);
     /**
      * Expand the tree from a vertex
      * @param v : Node to expand
@@ -88,17 +89,19 @@ private:
      * @return Node : if it is a empty node (id = -1), then do not find a path
      *         vector of Nodes : all the new nodes created during expansion
     */
-    std::pair<MotionTree::Node, std::vector<MotionTree::Node>> ExpandTree(MotionTree::Node v, StateSpace::VehicleState s_target);
+    std::pair<typename MotionTree<State,Control>::Node,  std::vector<typename MotionTree<State,Control>::Node>> ExpandTree(typename MotionTree<State,Control>::Node v, State s_target);
     
     /**
      * Project a state to the workspace
      * @param s : VehicleState
      * @return pair of x and y in the workspace
     */
-    std::pair<double, double> Proj(StateSpace::VehicleState s);
+    std::pair<double, double> Proj(State s);
     // int LocateRegion(double x, double y);
 
-    std::pair<int,std::vector<MotionTree::Node>> NewGroup(int r, MotionTree::Node v_new);
+    std::pair<int,std::vector<typename MotionTree<State,Control>::Node>> NewGroup(int r, typename MotionTree<State,Control>::Node v_new);
 
 
 };
+
+#include "GUST.cpp"

@@ -1,18 +1,19 @@
 #include "MotionTree.hpp"
 
-MotionTree::Node MotionTree::newVertex(StateSpace::VehicleState s_new){
+template<typename State, typename Control>
+typename MotionTree<State,Control>::Node MotionTree<State,Control>::newVertex(State s_new){
     Node n;
     n.id = nodes.size();
     n.state = s_new;
     nodes.push_back(n);
     return n;
 }
-
-MotionTree::Node MotionTree::getNode(int id){
+template<typename State, typename Control>
+typename MotionTree<State,Control>::Node MotionTree<State,Control>::getNode(int id){
     return nodes[id];
 }
-
-std::vector<MotionTree::Node> MotionTree::getPath(Node v_last){
+template<typename State, typename Control>
+std::vector<typename MotionTree<State,Control>::Node> MotionTree<State,Control>::getPath(Node v_last){
     std::vector<Node> path;
     Node n = v_last;
     while(n.id != 0){

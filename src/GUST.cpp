@@ -17,15 +17,17 @@
 /**
 * Initialize the tree and the groups
 */
-void GUST::InitTreeAndGroups(){
-    T = MotionTree();
+template<typename State, typename Control>
+void GUST<State, Control>::InitTreeAndGroups(){
+    T = MotionTree<State, Control>();
     T.nodes[0].state = s_init;
     double x = Proj(s_init).first;
     double y = Proj(s_init).second;
     T.nodes[0].region = W.LocateRegion(x,y);
     Lambda[T.nodes[0].region].push_back(T.nodes[0]);
 }
-std::pair<std::vector<MotionTree::Node>, int> GUST::SelectGroup(){
+template<typename State, typename Control>
+std::pair<std::vector<typename MotionTree<State, Control>::Node>, int> GUST<State, Control>::SelectGroup(){
     // Select a group Lambda_r
     // printf("Selecting group");
     int index = -1;
@@ -64,11 +66,12 @@ inline double PointDistance(
 * TODO: actually sample the target. for now
 * this just chooses the border of the region.
 */
-StateSpace::VehicleState GUST::SampleTarget(int r) {
+template<typename State, typename Control>
+State GUST<State, Control>::SampleTarget(int r) {
     // randomly sample a state from S in region r
 
     Region lambda_R = W.GetRegion(r);
-    StateSpace::VehicleState s_target;
+    State s_target;
     double lower_bound = 0;
     double upper_bound = 1;
  
@@ -110,19 +113,21 @@ StateSpace::VehicleState GUST::SampleTarget(int r) {
     return s_target;
 }
 
-std::pair<double,double> GUST::Proj(StateSpace::VehicleState s) {
+template<typename State, typename Control>
+std::pair<double,double> GUST<State, Control>::Proj(State s) {
     return std::make_pair(s.x_, s.y_);
 }
 
 /*
 * Get vertex in Lambda_r that is closest to s_target
 */
-MotionTree::Node GUST::SelectVertex(
-    std::vector<MotionTree::Node> Lambda_r, StateSpace::VehicleState s_target) {
+template<typename State, typename Control>
+typename MotionTree<State, Control>::Node GUST<State, Control>::SelectVertex(
+    std::vector<typename MotionTree<State, Control>::Node> Lambda_r, State s_target) {
     
     std::pair<double,double> p_target = GUST::Proj(s_target);
 
-    MotionTree::Node v_closest;
+    typename MotionTree<State, Control>::Node v_closest;
     double minDist = std::numeric_limits<double>::max();
     // Find vertex closest to s_target
     for (auto v : Lambda_r) {
@@ -152,10 +157,11 @@ MotionTree::Node GUST::SelectVertex(
 * Returns the last node added to the tree as well as a list
 * of all of the new vertices added.
 */
-std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
-    MotionTree::Node v, StateSpace::VehicleState s_target) {
-    std::vector<MotionTree::Node> new_vertices;
-    ControlSpace::VehicleControl u;
+template<typename State, typename Control>
+std::pair<typename MotionTree<State, Control>::Node, std::vector<typename MotionTree<State, Control>::Node>> GUST<State, Control>::ExpandTree(
+    typename MotionTree<State, Control>::Node v, State s_target) {
+    std::vector<typename MotionTree<State, Control>::Node> new_vertices;
+    Control u;
 
 
     bool usePID = ((double) rand() / (RAND_MAX)) < constants::usePID;
@@ -167,21 +173,21 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
     }
 
     int numIter = rand()%(constants::maxNrSteps-constants::minNrSteps + 1) + constants::minNrSteps;
-    MotionTree::Node v_parent = v;
+    typename MotionTree<State, Control>::Node v_parent = v;
 
     for (int k=1; k<numIter; k++) {
         if (usePID) {
             u = M.PIDController(v.state, s_target);
         }
 
-        StateSpace::VehicleState s_new = motion(v.state, u, constants::dt);
+        State s_new = motion(v.state, u, constants::dt);
         
         
         if (!valid(s_new)) {
-            return std::make_pair(MotionTree::Node(), new_vertices);
+            return std::make_pair(MotionTree<State, Control>::Node(), new_vertices);
         }
         
-        MotionTree::Node v_new = T.newVertex(s_new);
+        typename MotionTree<State, Control>::Node v_new = T.newVertex(s_new);
         // std::cout << "s_new: " << s_new.x_ << ", " << s_new.y_ << std::endl;
         T.setParent(v_new.id, v_parent.id);
         T.setRegion(v_new.id, W.LocateRegion(s_new.x_, s_new.y_));
@@ -195,61 +201,61 @@ std::pair<MotionTree::Node, std::vector<MotionTree::Node>> GUST::ExpandTree(
         }
         if (S.nearTarget(s_new, s_target)) {
             
-             return std::make_pair(MotionTree::Node(), new_vertices);
+             return std::make_pair(typename MotionTree<State, Control>::Node(), new_vertices);
         }
 
         v = v_new;
     }
 
-    return std::make_pair(MotionTree::Node(), new_vertices);
+    return std::make_pair(typename MotionTree<State, Control>::Node(), new_vertices);
 
 }
-
-std::pair<int,std::vector<MotionTree::Node>> GUST::NewGroup(
-    int r, MotionTree::Node v_new) {
+template<typename State, typename Control>
+std::pair<int,std::vector<typename MotionTree<State, Control>::Node>> GUST<State, Control>::NewGroup(
+    int r, typename MotionTree<State, Control>::Node v_new) {
     
-    return make_pair(r, std::vector<MotionTree::Node>{T.getNode(v_new.id)});
+    return make_pair(r, std::vector<typename MotionTree<State, Control>::Node>{T.getNode(v_new.id)});
 }
+template<typename State, typename Control>
+typename MotionTree<State, Control>::Node GUST<State, Control>::GroupPlanner(
+    std::vector<typename MotionTree<State, Control>::Node> Lambda_r, int r) {
 
-MotionTree::Node GUST::GroupPlanner(
-    std::vector<MotionTree::Node> Lambda_r, int r) {
-
-    StateSpace::VehicleState s_target = SampleTarget(r);
-    MotionTree::Node v = SelectVertex(Lambda_r, s_target);
+    State s_target = SampleTarget(r);
+    typename MotionTree<State, Control>::Node v = SelectVertex(Lambda_r, s_target);
     // s_target.v_ = 0.5;
-    std::pair<MotionTree::Node, std::vector<MotionTree::Node>> new_v = ExpandTree(v, s_target);
+    std::pair<typename MotionTree<State, Control>::Node, std::vector<typename MotionTree<State, Control>::Node>> new_v = ExpandTree(v, s_target);
 
-    MotionTree::Node v_last = new_v.first;
-    std::vector<MotionTree::Node> new_vertices = new_v.second;
+    typename MotionTree<State, Control>::Node v_last = new_v.first;
+    std::vector<typename MotionTree<State, Control>::Node> new_vertices = new_v.second;
 
-    for (MotionTree::Node v_new : new_vertices) {
+    for (typename MotionTree<State, Control>::Node v_new : new_vertices) {
         std::pair<double,double> v_new_point = Proj(v_new.state);
         int r_new = W.LocateRegion(v_new_point.first, v_new_point.second);
 
-        std::unordered_map<int,std::vector<MotionTree::Node>>::const_iterator iter = EmptyLambda.find(r_new);
+        typename std::unordered_map<int,std::vector< typename MotionTree<State, Control>::Node>>::const_iterator iter = EmptyLambda.find(r_new);
         // If region of the v_new is in the set of empty regions
         if (iter != EmptyLambda.end()) {
             // Remove r_new from empty splits
-            std::vector<MotionTree::Node> vertex_list = iter->second;
+            std::vector<typename MotionTree<State, Control>::Node> vertex_list = iter->second;
             EmptyLambda.erase(r_new);
 
             // Add r_new back to Lambda
             Lambda.insert(
                 make_pair(
-                    r_new, std::vector<MotionTree::Node>{v_new}
+                    r_new, std::vector<typename MotionTree<State, Control>::Node>{v_new}
                 )
             );
         }
         else if(Lambda.find(r_new) == Lambda.end()){
             // If region of the v_new is in the set of non-empty regions
-            std::pair<int,std::vector<MotionTree::Node>> new_group = NewGroup(r_new, v_new);
+            std::pair<int,std::vector<typename MotionTree<State, Control>::Node>> new_group = NewGroup(r_new, v_new);
             int r_new_new = new_group.first;
-            std::vector<MotionTree::Node> vertex_list = new_group.second;
+            std::vector<typename MotionTree<State, Control>::Node> vertex_list = new_group.second;
  
             // Add r_new_new to Lambda
             Lambda.insert(
                 make_pair(
-                    r_new_new, std::vector<MotionTree::Node>{v_new}
+                    r_new_new, std::vector<typename MotionTree<State, Control>::Node>{v_new}
                 )
             );
         }
@@ -264,7 +270,8 @@ MotionTree::Node GUST::GroupPlanner(
 /*
 * SplitGroup
 */
-void GUST::SplitGroup(int r){
+template<typename State, typename Control>
+void GUST<State, Control>::SplitGroup(int r){
     std::vector<Region> new_regions = W.SplitRegion(W.GetRegion(r));
     if(new_regions.size() == 0){
         return;
@@ -275,7 +282,7 @@ void GUST::SplitGroup(int r){
         {
             int id = W.addRegion(region);
             
-            std::vector<MotionTree::Node> vertex_list;
+            std::vector<typename MotionTree<State, Control>::Node> vertex_list;
             for(auto &v : Lambda.find(r)->second){
                 if(W.LocateRegion(v.state.x_, v.state.y_) == id){
                     v.region = id;
@@ -307,8 +314,8 @@ void GUST::SplitGroup(int r){
 //******************************************************************
 //************************* GUST Function **************************
 //******************************************************************
-
-std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNodes){
+template<typename State, typename Control>
+std::vector<typename MotionTree<State, Control>::Node> GUST<State, Control>::RunGUST(std::vector<typename MotionTree<State, Control>::Node> &allNodes){
     W.Decompose();
     W.CalculateHeuristic(goal_region.x_start + goal_region.x_extent/2, goal_region.y_start + goal_region.y_extent/2);
 
@@ -321,11 +328,11 @@ std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNo
         // printf("Enter Loop\n");
         int groupId = SelectGroup().second;
         // std::cout << "groupId: " << groupId << std::endl;
-        std::vector<MotionTree::Node> Lambda_r = Lambda.find(groupId)->second;
+        std::vector<typename MotionTree<State, Control>::Node> Lambda_r = Lambda.find(groupId)->second;
         if(Lambda_r.size() == 0){
             printf("wrong\n");
         }
-        MotionTree::Node v_last = GroupPlanner(Lambda_r, groupId);
+        typename MotionTree<State, Control>::Node v_last = GroupPlanner(Lambda_r, groupId);
 
         if(v_last.id != -1){
             printf("finish\n");
@@ -342,5 +349,6 @@ std::vector<MotionTree::Node> GUST::RunGUST(std::vector<MotionTree::Node> &allNo
 
     } 
     allNodes = T.nodes;
-    return std::vector<MotionTree::Node>{};  
+    return std::vector<typename MotionTree<State, Control>::Node>{};  
 }
+

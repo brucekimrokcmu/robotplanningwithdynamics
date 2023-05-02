@@ -1,19 +1,14 @@
 #pragma once
-#include "StateSpace.hpp"
-#include "Constants.hpp"
+#include "ControlSpace.hpp"
+#include "../Subjects/Vehicle2D.hpp"
 
 
-class ControlSpace{
+
+class Vehicle2DControlSpace : public ControlSpace<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>{
 
     public: 
 
-        struct VehicleControl 
-        {
-            double acc;
-            double steering_rate;
-        };
-
-        ControlSpace() 
+        Vehicle2DControlSpace() 
         :   mtotal_error_acc(0), 
             mtotal_error_steering(0),
             mprev_error_acc(0),
@@ -45,12 +40,10 @@ class ControlSpace{
             mprev_error_steering = prev_error_steering;
         };
 
-        VehicleControl PIDController(StateSpace::VehicleState s_current, StateSpace::VehicleState s_target);
-        VehicleControl RandomController();
+        Vehicle2D::Vehicle2DControl PIDController(Vehicle2D::Vehicle2DState s_current, Vehicle2D::Vehicle2DState s_target) override;
+        Vehicle2D::Vehicle2DControl RandomController() override;
 
     private:
-        StateSpace::VehicleState s_current;
-        StateSpace::VehicleState s_target;
 
         double mprev_error_acc;
         double mprev_error_steering;

@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "StateSpace.hpp"
-#include "ControlSpace.hpp"
 
+template<typename State, typename Control>
 class MotionTree {
 public:
     struct Node {
@@ -11,8 +10,8 @@ public:
         int parent;                 // ID of parent
         int region;                 // Region ID of the node
         std::vector<int> children;  // IDs of the children nodes
-        StateSpace::VehicleState state;         // state of Node
-        ControlSpace::VehicleControl control;       // Motion to the Node
+        State state;         // state of Node
+        Control control;       // Motion to the Node
 
         Node(){id = -1;};
         Node(int id) : id(id) {}
@@ -29,7 +28,7 @@ public:
      * @param s_new : VehicleState
      * @return new Node
     */
-    Node newVertex(StateSpace::VehicleState s_new);    
+    Node newVertex(State s_new);    
     /**
      * Get a node from the tree based on its ID
      * @param id : ID of the node
@@ -55,7 +54,7 @@ public:
         nodes[id_].region = region_id;
     }  
 
-    void setControl(int id_, ControlSpace::VehicleControl control_){
+    void setControl(int id_, Control control_){
         nodes[id_].control = control_;
     }
     

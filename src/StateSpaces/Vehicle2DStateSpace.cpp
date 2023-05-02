@@ -1,6 +1,7 @@
-#include "StateSpace.hpp"
+#include "Vehicle2DStateSpace.hpp"
 
-StateSpace::VehicleState StateSpace::getRandomState(){
+Vehicle2D::Vehicle2DState Vehicle2DStateSpace::getRandomState() 
+{
         double x = (double)rand() / RAND_MAX * maxX;
         double y = (double)rand() / RAND_MAX * maxY;
         // printf("%f, %f\n", x, y);
@@ -8,10 +9,10 @@ StateSpace::VehicleState StateSpace::getRandomState(){
         double v = (double)rand() / RAND_MAX * maxSpeed;
         bool isNegative = rand() % 2;
         double phi = isNegative ? -(double)rand() / RAND_MAX * maxSteering : (double)rand() / RAND_MAX * maxSteering;
-        return VehicleState(x, y, theta, v, phi);
+        return Vehicle2D::Vehicle2DState(x, y, theta, v, phi);
 }
 
-bool StateSpace::nearTarget(VehicleState s_new, VehicleState s_target)
+bool Vehicle2DStateSpace::nearTarget(Vehicle2D::Vehicle2DState s_new, Vehicle2D::Vehicle2DState s_target) 
 {
     double x_diff = s_new.x_ - s_target.x_;
     double y_diff = s_new.y_ - s_target.y_;

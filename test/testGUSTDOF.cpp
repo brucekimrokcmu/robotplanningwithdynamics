@@ -1,8 +1,6 @@
 #include "../src/GUST.hpp"
-// #include "../src/RRT.hpp"
-#include "../src/Subjects/Vehicle2D.hpp"
-#include "../src/ControlSpaces/Vehicle2DControl.hpp"
-#include "../src/StateSpaces/Vehicle2DStateSpace.hpp"
+#include "../src/RRT.hpp"
+#include "../src/Update.hpp"
 #include <iostream>
 #include <cassert>
 #include <fstream> // For reading/writing files
@@ -13,16 +11,16 @@
 
 
 
-void addAllObstacles(std::string fpath, WorkSpace &W) {
-    std::fstream fin;
-    fin.open(fpath, std::ios::in);
+void addAllObstacles(string fpath, WorkSpace &W) {
+    fstream fin;
+    fin.open(fpath, ios::in);
 
-    std::string line;
+    string line;
     while(getline(fin, line)) {
         
         // Split line on comma
-        std::stringstream ss(line);
-        std::string val;
+        stringstream ss(line);
+        string val;
 
         int index = 0;
         double coordinates[4];
@@ -44,32 +42,30 @@ int main(int argc, char** argv){
     WorkSpace W2 = WorkSpace(constants::workSpaceMinX,constants::workSpaceMaxX,
         constants::workSpaceMinY,constants::workSpaceMaxY);
     addAllObstacles("sample-obstacles.txt", W2);
-    std::cout << "Added obstacles: #" << W2.countObstacleSize() << std::endl;
+    cout << "Added obstacles: #" << W2.countObstacleSize() << endl;
     bool useRRT = false;
     if(argc > 3 && std::string(argv[3]) == "-rrt"){
         useRRT = true;
     }
-    // Test Vehicle2D
-    Vehicle2D vehicle2d = Vehicle2D(constants::carLength);
     // Making a state space
-    Vehicle2DStateSpace S = Vehicle2DStateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
+    StateSpace S = StateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
         constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Initial state
-    Vehicle2D::Vehicle2DState s_init = Vehicle2D::Vehicle2DState(constants::initX, constants::initY, 
+    StateSpace::VehicleState s_init = StateSpace::VehicleState(constants::initX, constants::initY, 
         constants::initHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
     // Making a control space (random we don't need this for now)
-   
-    Vehicle2DControlSpace C = Vehicle2DControlSpace();
+    Update U = Update();
+    ControlSpace C = ControlSpace();
     // motion function (we don't need this for now)
-     std::function<Vehicle2D::Vehicle2DState(Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl, double)>
-         motion = [&](Vehicle2D::Vehicle2DState v, Vehicle2D::Vehicle2DControl c, double t){return vehicle2d.Motion(v,c,t);};
+     std::function<StateSpace::VehicleState(StateSpace::VehicleState, ControlSpace::VehicleControl, double)>
+         motion = [&](StateSpace::VehicleState v, ControlSpace::VehicleControl c, double t){return U.Motion(v,c,t);};
     
 
     // Goal region
     Region goal_region = Region(constants::goalRegionX,constants::goalRegionY,constants::goalRegionWidth,constants::goalRegionWidth); 
 
     // goal function
-    std::function<bool(Vehicle2D::Vehicle2DState)> goal = [&](Vehicle2D::Vehicle2DState s){
+    std::function<bool(StateSpace::VehicleState)> goal = [&](StateSpace::VehicleState s){
         if(goal_region.inRegion(s.x_, s.y_)){
             
             return true;
@@ -78,7 +74,7 @@ int main(int argc, char** argv){
     };
 
     // valid function
-    std::function<bool(Vehicle2D::Vehicle2DState)> valid = [&](Vehicle2D::Vehicle2DState s){
+    std::function<bool(StateSpace::VehicleState)> valid = [&](StateSpace::VehicleState s){
 
         std::vector<std::pair<double,double>> car;
         car.push_back(std::make_pair(s.x_, s.y_));
@@ -98,20 +94,19 @@ int main(int argc, char** argv){
 
     // ! Running GUST
     
-    std::vector<typename MotionTree<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>::Node> allNodes;
-    std::vector<typename MotionTree<Vehicle2D::Vehicle2DState,Vehicle2D::Vehicle2DControl>::Node> result;
+    std::vector<MotionTree::Node> allNodes;
+    std::vector<MotionTree::Node> result;
     if(useRRT){
-        // ! for test, comment these RRT code
-        // auto start = std::chrono::high_resolution_clock::now();  
-        // RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
-        // result = rrt.RunRRT(allNodes);
-        // auto stop = std::chrono::high_resolution_clock::now();
-        // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        // std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
-        // std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
+        auto start = std::chrono::high_resolution_clock::now();  
+        RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = rrt.RunRRT(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
+        std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
     }else{
         auto start = std::chrono::high_resolution_clock::now();  
-        GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl> gust = GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>( S, W2, C, motion, valid, s_init, goal, goal_region);
+        GUST gust = GUST( S, W2, C, motion, valid, s_init, goal, goal_region);
         result = gust.RunGUST(allNodes);
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
