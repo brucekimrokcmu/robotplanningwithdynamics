@@ -1,5 +1,5 @@
-#include "../src/GUST.hpp"
-// #include "../src/RRT.hpp"
+#include "../src/Planners/GUST.hpp"
+#include "../src/Planners/RRT.hpp"
 #include "../src/Subjects/Vehicle2D.hpp"
 #include "../src/ControlSpaces/Vehicle2DControl.hpp"
 #include "../src/StateSpaces/Vehicle2DStateSpace.hpp"
@@ -102,13 +102,13 @@ int main(int argc, char** argv){
     std::vector<typename MotionTree<Vehicle2D::Vehicle2DState,Vehicle2D::Vehicle2DControl>::Node> result;
     if(useRRT){
         // ! for test, comment these RRT code
-        // auto start = std::chrono::high_resolution_clock::now();  
-        // RRT rrt = RRT(S, W2, C, motion, valid, s_init, goal, goal_region);
-        // result = rrt.RunRRT(allNodes);
-        // auto stop = std::chrono::high_resolution_clock::now();
-        // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        // std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
-        // std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
+        auto start = std::chrono::high_resolution_clock::now();  
+        RRT<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl> rrt = RRT<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>(S, W2, C, motion, valid, s_init, goal, goal_region);
+        result = rrt.RunRRT(allNodes);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "RRT took " << duration.count() << " milliseconds" << std::endl;
+        std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
     }else{
         auto start = std::chrono::high_resolution_clock::now();  
         GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl> gust = GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>( S, W2, C, motion, valid, s_init, goal, goal_region);

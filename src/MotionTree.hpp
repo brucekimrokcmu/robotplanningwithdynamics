@@ -28,19 +28,36 @@ public:
      * @param s_new : VehicleState
      * @return new Node
     */
-    Node newVertex(State s_new);    
+    Node newVertex(State s_new){
+        Node n;
+        n.id = nodes.size();
+        n.state = s_new;
+        nodes.push_back(n);
+        return n;
+    };    
     /**
      * Get a node from the tree based on its ID
      * @param id : ID of the node
      * @return Node
     */
-    Node getNode(int id);             
+    Node getNode(int id){
+        return nodes[id];
+    };             
     /**
      * Get the path from the root to a node
      * @param v_last : Node (last node in the path)
      * @return vector of Nodes (path)
     */                  
-    std::vector<Node> getPath(Node v_last);       
+    std::vector<Node> getPath(Node v_last){
+        std::vector<Node> path;
+        Node n = v_last;
+        while(n.id != 0){
+            path.push_back(n);
+            n = nodes[n.parent];
+        }
+        path.push_back(n);
+        return path;
+    };       
 
     void addChild(int id_, int child_id){
         nodes[id_].children.push_back(child_id);
