@@ -28,6 +28,40 @@ StateSpace::VehicleState Update::Dynamics(StateSpace::VehicleState s_curr, Contr
     return s_dot;
 }
 
+StateSpace::VehicleHighDOFState Update::DynamicsHighDOF(StateSpace::VehicleHighDOFState s_curr, ControlSpace::VehicleControl u, double dt)
+{
+    
+    double x = s_curr.x_;
+    double y = s_curr.y_;
+    double z = s_curr.z_;
+
+    double roll = s_curr.roll_;
+    double pitch = s_curr.pitch_;
+    double yaw = s_curr.yaw_;
+    
+    double vx = s_curr.vx_;
+    double vy = s_curr.vy_;
+    double vz = s_curr.vz_;
+    double wx = s_curr.wx_;
+    double wy = s_curr.wy_;
+    double wz = s_curr.wz_;
+
+    double phi = s_curr.phi_;
+    
+    double acc = u.acc;
+    double steering_rate = u.steering_rate;
+
+    double x_dot = v*cos(theta)*cos(phi);
+    double y_dot = v*sin(theta)*cos(phi);
+    double theta_dot = v*sin(phi)/VehicleGeometry.length;
+    double v_dot = acc;
+    double phi_dot = steering_rate;
+
+    StateSpace::VehicleHighDOFState s_dot = {x_dot, y_dot, theta_dot, v_dot, phi_dot}; // Dynamics         
+
+    return s_dot;
+}
+
 StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt) 
 {
     //Using Explicit Midpoint

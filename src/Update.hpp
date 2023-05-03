@@ -19,8 +19,9 @@ public:
     Update(){};
     // Update(double length, double width, double maxSpeed, double maxAcceleration, double maxSteeringAngle) {};
     StateSpace::VehicleState Dynamics(StateSpace::VehicleState s_curr, ControlSpace::VehicleControl u, double dt);
-    StateSpace::VehicleState DynamicsHighDOF(StateSpace::VehicleHighDOFState s_curr, ControlSpace::VehicleControl u, double dt);
+    StateSpace::VehicleHighDOFState DynamicsHighDOF(StateSpace::VehicleHighDOFState s_curr, ControlSpace::VehicleControl u, double dt);
     StateSpace::VehicleState Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt);
+    StateSpace::VehicleState Motion(const StateSpace::VehicleHighDOFState s_curr, const ControlSpace::VehicleControl u, double dt);
 
 private:
     double mlength_;         // Length of the vehicle
