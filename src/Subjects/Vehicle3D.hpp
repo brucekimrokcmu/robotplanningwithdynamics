@@ -1,3 +1,4 @@
+#include "../Constants.hpp"
 class Vehicle3D{
 public:
     struct Vehicle3DState{
@@ -40,12 +41,20 @@ public:
     };
     struct Vehicle3DControl 
     {
-        //TODO: Implement control for 3D vehicle
+        double acc; // in HighDOF model, acc is replaced with engine_force F
+        double steering_rate;
     };
-    Vehicle3D(double length): length(length){}; //TODO: add other nessaary parameters
+    Vehicle3D(const double length, const double width, const double height, const double mass) : length(length), width(width), height(height), mass(mass){};//TODO: add other nessaary parameters
     Vehicle3DState Dynamics(const Vehicle3DState s_curr, const Vehicle3DControl u, double dt);
     Vehicle3DState Motion(const Vehicle3DState s_curr, const Vehicle3DControl u, double dt);
   private:
-    double length;
+    const double length;
+    const double width;
+    const double height;
+    const double mass;
+
+    const double Ixx = (mass / 12.0) * (width * width + height * height);
+    const double Iyy = (mass / 12.0) * (length * length + height * height);
+    const double Izz = (mass / 12.0) * (length * length + width * width);
     //TODO: add other nessaary parameters
 };

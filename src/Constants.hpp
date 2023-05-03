@@ -6,6 +6,7 @@ namespace constants
 {   
     // Basic Constants
     constexpr double PI_D { 3.14159265358979323846 };
+    constexpr double GRAVITY { 9.81 };
 
     //  ControlSpace
     constexpr double max_u_acc { 0.15 };
@@ -37,6 +38,9 @@ namespace constants
     // Update
     constexpr double carLength { 0.5 };
     constexpr double carWidth { 0.25 };
+    constexpr double carHeight {0.15 };
+    constexpr double carMass { 0.20 };
+    constexpr double gravity { -9.81 };
 
     // GUST
     constexpr double MAXTIME { 120000 }; // 120 seconds
