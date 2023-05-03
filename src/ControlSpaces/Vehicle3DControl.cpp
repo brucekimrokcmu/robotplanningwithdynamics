@@ -15,7 +15,7 @@ Vehicle3D::Vehicle3DControl Vehicle3DControlSpace::PIDController(Vehicle3D::Vehi
 
 
     // Define PID errors
-    double error_acc = s_target.v_ - s_current.v_;
+    double error_acc = s_target.vx_ - s_current.vx_;
     double error_steering = s_target.phi_ - s_current.phi_;
 
     // Get Previous/Total errors in acceleration and steering rate 

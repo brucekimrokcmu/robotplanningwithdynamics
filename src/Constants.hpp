@@ -56,20 +56,44 @@ namespace constants
     
     // TEST GUST
     constexpr double workSpaceMinX { 0 };
-    constexpr double workSpaceMaxX { 16 };
+    constexpr double workSpaceMaxX { 10 };
     constexpr double workSpaceMinY { 0 };
-    constexpr double workSpaceMaxY { 12 };
+    constexpr double workSpaceMaxY { 10 };
+    constexpr double workSpaceMinZ { 0 };
+    constexpr double workSpaceMaxZ { 0 };
     constexpr double stateSpaceMaxHeading { 2*PI_D };
     constexpr double stateSpaceMaxSpeed { 1 };
     constexpr double stateSpaceMaxSteering { PI_D/6 };
+    constexpr double stateSpaceMaxRoll { 0 };
+    constexpr double stateSpaceMaxPitch { 0 };
+    constexpr double stateSpaceMaxYaw { 2*PI_D };
+    constexpr double stateSpaceMaxPhi { PI_D/6 };
+    constexpr double stateSpaceMaxVx { 1 };
+    constexpr double stateSpaceMaxVy { 1 };
+    constexpr double stateSpaceMaxVz { 1 };
+    constexpr double stateSpaceMaxWx { PI_D/6 };
+    constexpr double stateSpaceMaxWy { PI_D/6 };
+    constexpr double stateSpaceMaxWz { PI_D/6 };
+
 
     constexpr double initX { 2 };
     constexpr double initY { 2 };
+    constexpr double initZ { 0 };
     constexpr double initHeading { 0.0 };
     constexpr double initSpeed { 0.0 };
     constexpr double initSteering { 0.0 };
-    constexpr double goalRegionX { 10 };
-    constexpr double goalRegionY { 11 };
+    constexpr double initRoll { 0.0 };
+    constexpr double initPitch { 0.0 };
+    constexpr double initYaw { 0.0 };
+    constexpr double initPhi { 0.0 };
+    constexpr double initVx { 0.0 };
+    constexpr double initVy { 0.0 };
+    constexpr double initVz { 0.0 };
+    constexpr double initWx { 0.0 };
+    constexpr double initWy { 0.0 };
+    constexpr double initWz { 0.0 };
+    constexpr double goalRegionX { 8 };
+    constexpr double goalRegionY { 8 };
     constexpr double goalRegionWidth { 0.1 };
 
 }

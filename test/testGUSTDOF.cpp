@@ -50,26 +50,30 @@ int main(int argc, char** argv){
         useRRT = true;
     }
     // Test Vehicle2D
-    Vehicle3D vehicle3d = Vehicle2D(constants::carLength);
+    Vehicle3D vehicle3d = Vehicle3D(constants::carLength, constants::carWidth, constants::carHeight, constants::carMass);
     // Making a state space
-    Vehicle2DStateSpace S = Vehicle2DStateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,
-        constants::stateSpaceMaxHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
+    Vehicle3DStateSpace S = Vehicle3DStateSpace(constants::workSpaceMaxX,constants::workSpaceMaxY,constants::workSpaceMaxZ,
+        constants::stateSpaceMaxRoll,constants::stateSpaceMaxPitch,constants::stateSpaceMaxYaw,
+        constants::stateSpaceMaxPhi,constants::stateSpaceMaxVx,constants::stateSpaceMaxVy,constants::stateSpaceMaxVz,
+        constants::stateSpaceMaxWx,constants::stateSpaceMaxWy,constants::stateSpaceMaxWz);
     // Initial state
-    Vehicle2D::Vehicle2DState s_init = Vehicle2D::Vehicle2DState(constants::initX, constants::initY, 
-        constants::initHeading, constants::stateSpaceMaxSpeed, constants::stateSpaceMaxSteering);
+    Vehicle3D::Vehicle3DState s_init = Vehicle3D::Vehicle3DState(constants::initX, constants::initY, constants::initZ, 
+        constants::initRoll, constants::initPitch, constants::initYaw, 
+        constants::initPhi, constants::initVx, constants::initVy, constants::initVz, 
+        constants::initWx, constants::initWy, constants::initWz);
     // Making a control space (random we don't need this for now)
    
-    Vehicle2DControlSpace C = Vehicle2DControlSpace();
+    Vehicle3DControlSpace C = Vehicle3DControlSpace();
     // motion function (we don't need this for now)
-     std::function<Vehicle2D::Vehicle2DState(Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl, double)>
-         motion = [&](Vehicle2D::Vehicle2DState v, Vehicle2D::Vehicle2DControl c, double t){return vehicle2d.Motion(v,c,t);};
+     std::function<Vehicle3D::Vehicle3DState(Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl, double)>
+         motion = [&](Vehicle3D::Vehicle3DState v, Vehicle3D::Vehicle3DControl c, double t){return vehicle3d.Motion(v,c,t);};
     
 
     // Goal region
     Region goal_region = Region(constants::goalRegionX,constants::goalRegionY,constants::goalRegionWidth,constants::goalRegionWidth); 
 
     // goal function
-    std::function<bool(Vehicle2D::Vehicle2DState)> goal = [&](Vehicle2D::Vehicle2DState s){
+    std::function<bool(Vehicle3D::Vehicle3DState)> goal = [&](Vehicle3D::Vehicle3DState s){
         if(goal_region.inRegion(s.x_, s.y_)){
             
             return true;
@@ -78,19 +82,19 @@ int main(int argc, char** argv){
     };
 
     // valid function
-    std::function<bool(Vehicle2D::Vehicle2DState)> valid = [&](Vehicle2D::Vehicle2DState s){
+    std::function<bool(Vehicle3D::Vehicle3DState)> valid = [&](Vehicle3D::Vehicle3DState s){
 
         std::vector<std::pair<double,double>> car;
         car.push_back(std::make_pair(s.x_, s.y_));
-        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * constants::carLength, s.y_ + sin(s.theta_) * constants::carLength));
-        car.push_back(std::make_pair(s.x_ + cos(s.theta_) * constants::carLength - sin(s.theta_) * constants::carWidth, s.y_ + sin(s.theta_) * constants::carLength + cos(s.theta_) * constants::carWidth));
-        car.push_back(std::make_pair(s.x_ + sin(s.theta_) * constants::carWidth, s.y_ + cos(s.theta_) * constants::carWidth));
+        car.push_back(std::make_pair(s.x_ + cos(s.yaw_) * constants::carLength, s.y_ + sin(s.yaw_) * constants::carLength));
+        car.push_back(std::make_pair(s.x_ + cos(s.yaw_) * constants::carLength - sin(s.yaw_) * constants::carWidth, s.y_ + sin(s.yaw_) * constants::carLength + cos(s.yaw_) * constants::carWidth));
+        car.push_back(std::make_pair(s.x_ + sin(s.yaw_) * constants::carWidth, s.y_ + cos(s.yaw_) * constants::carWidth));
                             
                            
        if(W2.Check_collision(car)){
            return false;
        }
-       if(s.x_ <= constants::workSpaceMinX || s.x_ >= constants::workSpaceMaxX || s.y_ <= constants::workSpaceMinY || s.y_ >= constants::workSpaceMaxY){
+       if(s.x_ <= constants::workSpaceMinX || s.x_ >= constants::workSpaceMaxX || s.y_ <= constants::workSpaceMinY || s.y_ >= constants::workSpaceMaxY ){
               return false;
        }
        return true;
@@ -98,12 +102,12 @@ int main(int argc, char** argv){
 
     // ! Running GUST
     
-    std::vector<typename MotionTree<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>::Node> allNodes;
-    std::vector<typename MotionTree<Vehicle2D::Vehicle2DState,Vehicle2D::Vehicle2DControl>::Node> result;
+    std::vector<typename MotionTree<Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl>::Node> allNodes;
+    std::vector<typename MotionTree<Vehicle3D::Vehicle3DState,Vehicle3D::Vehicle3DControl>::Node> result;
     if(useRRT){
         // ! for test, comment these RRT code
         auto start = std::chrono::high_resolution_clock::now();  
-        RRT<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl> rrt = RRT<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>(S, W2, C, motion, valid, s_init, goal, goal_region);
+        RRT<Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl> rrt = RRT<Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl>(S, W2, C, motion, valid, s_init, goal, goal_region);
         result = rrt.RunRRT(allNodes);
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
@@ -111,7 +115,7 @@ int main(int argc, char** argv){
         std::cout << "RRT has " << allNodes.size() << " nodes" << std::endl;
     }else{
         auto start = std::chrono::high_resolution_clock::now();  
-        GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl> gust = GUST<Vehicle2D::Vehicle2DState, Vehicle2D::Vehicle2DControl>( S, W2, C, motion, valid, s_init, goal, goal_region);
+        GUST<Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl> gust = GUST<Vehicle3D::Vehicle3DState, Vehicle3D::Vehicle3DControl>( S, W2, C, motion, valid, s_init, goal, goal_region);
         result = gust.RunGUST(allNodes);
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
@@ -178,8 +182,8 @@ int main(int argc, char** argv){
     for (int i = result.size()-1; i >= 0; i--) {
             m_log_fstream << result[i].state.x_ << ",";
             m_log_fstream << result[i].state.y_ << ","; 
-            m_log_fstream << result[i].state.v_ << ","; 
-            m_log_fstream << result[i].state.theta_ << ","; 
+            m_log_fstream << result[i].state.vx_ << ","; 
+            m_log_fstream << result[i].state.yaw_<< ","; 
             m_log_fstream << result[i].state.phi_; 
             m_log_fstream << std::endl;
 	}

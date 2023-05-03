@@ -1,3 +1,4 @@
+#pragma once
 #include "../Constants.hpp"
 class Vehicle3D{
 public:
@@ -44,7 +45,7 @@ public:
         double acc; // in HighDOF model, acc is replaced with engine_force F
         double steering_rate;
     };
-    Vehicle3D(const double length, const double width, const double height, const double mass) : length(length), width(width), height(height), mass(mass){};//TODO: add other nessaary parameters
+    Vehicle3D( double length,  double width,  double height,  double mass) : length(length), width(width), height(height), mass(mass){};//TODO: add other nessaary parameters
     Vehicle3DState Dynamics(const Vehicle3DState s_curr, const Vehicle3DControl u, double dt);
     Vehicle3DState Motion(const Vehicle3DState s_curr, const Vehicle3DControl u, double dt);
   private:
