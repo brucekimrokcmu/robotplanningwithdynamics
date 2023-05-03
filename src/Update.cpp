@@ -107,4 +107,43 @@ StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, c
 }
 
 
+StateSpace::VehicleHighDOFState Update::Motion(const StateSpace::VehicleHighDOFState s_curr, const ControlSpace::VehicleControl u, double dt) 
+{
+    //Using Explicit Midpoint
+    StateSpace::VehicleHighDOFState s_temp, s_new;
+    StateSpace::VehicleHighDOFState f1 = DynamicsHighDOF(s_curr, u, dt);
+
+    s_temp.x_ = s_curr.x_ + 0.5 * dt * f1.x_;
+    s_temp.y_ = s_curr.y_ + 0.5 * dt * f1.y_;
+    s_temp.z_ = s_curr.z_ + 0.5 * dt * f1.z_;
+    s_temp.roll_ = s_curr.roll_ + 0.5 * dt * f1.roll_;
+    s_temp.pitch_ = s_curr.pitch_ + 0.5 * dt * f1.pitch_;
+    s_temp.yaw_ = s_curr.yaw_ + 0.5 * dt * f1.yaw_;
+    s_temp.vx_ = s_curr.vx_ + 0.5 * dt * f1.vx_;
+    s_temp.vy_ = s_curr.vy_ + 0.5 * dt * f1.vy_;
+    s_temp.vz_ = s_curr.vz_ + 0.5 * dt * f1.vz_;
+    s_temp.wx_ = s_curr.wx_ + 0.5 * dt * f1.wx_;
+    s_temp.wy_ = s_curr.wy_ + 0.5 * dt * f1.wy_;
+    s_temp.wz_ = s_curr.wz_ + 0.5 * dt * f1.wz_;
+    s_temp.phi_ = s_curr.phi_ + 0.5 * dt * f1.phi_;
+
+    StateSpace::VehicleHighDOFState f2 = DynamicsHighDOF(s_temp, u, dt);
+
+    s_new.x_ = s_curr.x_ + dt * f2.x_;
+    s_new.y_ = s_curr.y_ + dt * f2.y_;
+    s_new.z_ = s_curr.z_ + dt * f2.z_;
+    s_new.roll_ = s_curr.roll_ + dt * f2.roll_;
+    s_new.pitch_ = s_curr.pitch_ + dt * f2.pitch_;
+    s_new.yaw_ = s_curr.yaw_ +  dt * f2.yaw_;
+    s_new.vx_ = s_curr.vx_ + dt * f2.vx_;
+    s_new.vy_ = s_curr.vy_ + dt * f2.vy_;
+    s_new.vz_ = s_curr.vz_ + dt * f2.vz_;
+    s_new.wx_ = s_curr.wx_ + dt * f2.wx_;
+    s_new.wy_ = s_curr.wy_ + dt * f2.wy_;
+    s_new.wz_ = s_curr.wz_ + dt * f2.wz_;
+    s_new.phi_ = s_curr.phi_ +  dt * f2.phi_;
+
+    return s_new;
+
+}
 
