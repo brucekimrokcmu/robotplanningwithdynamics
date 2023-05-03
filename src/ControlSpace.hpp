@@ -9,7 +9,7 @@ class ControlSpace{
 
         struct VehicleControl 
         {
-            double acc;
+            double acc; // in HighDOF model, acc is replaced with engine_force F
             double steering_rate;
         };
 

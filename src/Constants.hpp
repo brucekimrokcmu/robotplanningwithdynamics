@@ -37,6 +37,9 @@ namespace constants
     // Update
     constexpr double carLength { 0.5 };
     constexpr double carWidth { 0.25 };
+    constexpr double carHeight {0.15 };
+    constexpr double carMass { 0.20 };
+    constexpr double gravity { -9.81 };
 
     // GUST
     constexpr double MAXTIME { 60000 }; // 60 seconds

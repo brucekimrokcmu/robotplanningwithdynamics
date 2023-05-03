@@ -48,19 +48,39 @@ StateSpace::VehicleHighDOFState Update::DynamicsHighDOF(StateSpace::VehicleHighD
 
     double phi = s_curr.phi_;
     
-    double acc = u.acc;
-    double steering_rate = u.steering_rate;
+    double engine_force = u.acc;
+    double steering_rate = u.steering_rate; 
 
-    double x_dot = v*cos(theta)*cos(phi);
-    double y_dot = v*sin(theta)*cos(phi);
-    double theta_dot = v*sin(phi)/VehicleGeometry.length;
-    double v_dot = acc;
+    const double g = constants::gravity;
+
+    // TODO
+
+    double x_dot = vx*cos(yaw) + vy*sin(yaw); 
+    double y_dot = vx*sin(yaw) - vy*cos(yaw);
+    double z_dot = vz;
+    double roll_dot = wx + wy*sin(roll)*tan(pitch) + wz*cos(roll)*tan(pitch);
+    double pitch_dot = wy*cos(roll) - wz*sin(roll);
+    double yaw_dot = (wy*sin(roll) + wz*cos(roll))/cos(pitch);
+
+    double fx = engine_force*cos(phi)*cos(pitch);
+    double fy = engine_force*sin(phi)*cos(pitch);
+    double fz = engine_force*sin(pitch);
+
+    double vx_dot = fx/VehicleGeometry.mass - g*sin(pitch) - vy*wz + vz*wy;
+    double vy_dot = fy/VehicleGeometry.mass + g*sin(roll)*cos(pitch) -vx*wz + vz*wx;
+    double vz_dot = fz/VehicleGeometry.mass - g*cos(pitch)*cos(roll);
+    double wx_dot = (VehicleGeometry.Iyy - VehicleGeometry.Izz)*wy*wz/VehicleGeometry.Ixx;
+    double wy_dot = (VehicleGeometry.Izz - VehicleGeometry.Ixx)*wx*wz/VehicleGeometry.Iyy;
+    double wz_dot = (VehicleGeometry.Ixx - VehicleGeometry.Iyy)*wx*wy/VehicleGeometry.Izz;
     double phi_dot = steering_rate;
 
-    StateSpace::VehicleHighDOFState s_dot = {x_dot, y_dot, theta_dot, v_dot, phi_dot}; // Dynamics         
+
+    StateSpace::VehicleHighDOFState s_dot = {x_dot, y_dot, z_dot, roll_dot, pitch_dot, yaw_dot, vx_dot, vy_dot, vz_dot, wx_dot, wy_dot, wz_dot, phi_dot}; // Dynamics         
 
     return s_dot;
 }
+
+
 
 StateSpace::VehicleState Update::Motion(const StateSpace::VehicleState s_curr, const ControlSpace::VehicleControl u, double dt) 
 {
