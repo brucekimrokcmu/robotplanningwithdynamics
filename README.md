@@ -1,5 +1,8 @@
 # robotplanningwithdynamics
 
+## Presentation Slides
+https://docs.google.com/presentation/d/1txCaKPDJr_YV9JroRbZPb395SixWiXld6-BjgnG43_s/edit?usp=sharing
+
 ## Compilation
 
 ```shell
